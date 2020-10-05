@@ -133,3 +133,6 @@ dmypy.json
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints
+
+# Temp vim files
+*.swo

@@ -1,6 +1,11 @@
 # Streaming Parallel Decision Tree
 
-Based on [this issue](https://github.com/neurodata/progressive-learning/issues/34) from the [progressive learning](https://github.com/neurodata/progressive-learning) project.
+[![Python](https://img.shields.io/badge/python-3.8-cyan.svg)]()
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)
+
+
+Based on [this issue](https://github.com/neurodata/ProgLearn/issues/34) from the [ProgLearn](https://github.com/neurodata/ProgLearn) project.
 
 ## Relevant Repos
 

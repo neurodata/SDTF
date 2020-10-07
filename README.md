@@ -1,5 +1,7 @@
 # Streaming Parallel Decision Tree
 
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+
 Based on [this issue](https://github.com/neurodata/ProgLearn/issues/34) from the [ProgLearn](https://github.com/neurodata/ProgLearn) project.
 
 ## Relevant Repos

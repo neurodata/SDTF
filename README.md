@@ -1,6 +1,9 @@
 # Streaming Parallel Decision Tree
 
-<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+[![Python](https://img.shields.io/badge/python-3.8-cyan.svg)]()
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)
+
 
 Based on [this issue](https://github.com/neurodata/ProgLearn/issues/34) from the [ProgLearn](https://github.com/neurodata/ProgLearn) project.
 

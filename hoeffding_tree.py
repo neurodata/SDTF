@@ -12,6 +12,7 @@ from sklearn.utils.validation import (
     check_array,
     NotFittedError,
 )
+import matplotlib.pyplot as plt
 
 from proglearn.base import BaseTransformer
 
@@ -35,7 +36,7 @@ class HoeffdingTreeTransformer(BaseTransformer):
 
     def fit(self, X, y):
         """
-        Fits the transformer to data X with labels y.
+        Fit the transformer to data X with labels y.
 
         Parameters
         ----------
@@ -56,7 +57,7 @@ class HoeffdingTreeTransformer(BaseTransformer):
 
     def transform(self, X):
         """
-        Performs inference using the transformer.
+        Perform inference using the transformer.
 
         Parameters
         ----------
@@ -75,13 +76,22 @@ class HoeffdingTreeTransformer(BaseTransformer):
         return self.transformer.apply(X)
 
     def plot(self):
+        """
+        Plot the fitted tree.
+
+        Parameters
+        ----------
+        None
+        """
 
         if (self.is_fitted()):
-            plot_tree(self.transformer, filled=True)
+            fig, ax = plt.subplots(figsize=(20, 20))
+            plot_tree(self.transformer, filled=True, fontsize=15)
+            plt.show()
 
     def is_fitted(self):
         """
-        Indicates whether the transformer is fitted.
+        Indicate whether the transformer is fitted.
 
         Parameters
         ----------

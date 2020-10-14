@@ -3,10 +3,7 @@ Main Author: Haoyin Xu
 Corresponding Email: haoyinxu@gmail.com
 """
 # import the necessary packages
-from sklearn.tree import (
-    DecisionTreeClassifier,
-    plot_tree
-)
+from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.utils.validation import (
     check_X_y,
     check_array,
@@ -21,13 +18,25 @@ class HoeffdingTreeTransformer(BaseTransformer):
     """
     A class used to represent an hoeffding decision tree.
 
-    Attributes
+    Attributes (object)
     ---
+    kwargs : dict
+        A dictionary to contain parameters of the tree.
+    _is_fitted_ : bool
+        A boolean to identify if the model is currently fitted.
 
     Methods
     ---
-
+    fit(X, y)
+        Fits the transformer to data X with labels y.
+    transform(X)
+        Performs inference using the transformer.
+    is_fitted()
+        Indicates whether the transformer is fitted.
+    plot()
+        Plot the fitted tree.
     """
+
     def __init__(self, kwargs={}):
 
         self.kwargs = kwargs
@@ -75,20 +84,6 @@ class HoeffdingTreeTransformer(BaseTransformer):
         X = check_array(X)
         return self.transformer.apply(X)
 
-    def plot(self):
-        """
-        Plot the fitted tree.
-
-        Parameters
-        ----------
-        None
-        """
-
-        if (self.is_fitted()):
-            fig, ax = plt.subplots(figsize=(20, 20))
-            plot_tree(self.transformer, filled=True, fontsize=15)
-            plt.show()
-
     def is_fitted(self):
         """
         Indicate whether the transformer is fitted.
@@ -99,3 +94,36 @@ class HoeffdingTreeTransformer(BaseTransformer):
         """
 
         return self._is_fitted
+
+    def plot(self):
+        """
+        Plot the fitted tree.
+
+        Parameters
+        ----------
+        None
+        """
+
+        if self.is_fitted():
+            fig, ax = plt.subplots(figsize=(20, 20))
+            plot_tree(self.transformer, filled=True, fontsize=15)
+            plt.show()
+
+    def increment(self, X, y):
+        """
+        Fit the tree incrementally.
+
+        Parameters
+        ----------
+        X : ndarray
+            Input data matrix.
+        y : ndarray
+            Output (i.e. response data matrix).
+        """
+
+        if not self.is_fitted():
+            self.fit(X, y)
+        else:
+            # TODO: Implement the incremental fitting function
+
+            return self

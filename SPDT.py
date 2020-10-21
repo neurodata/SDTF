@@ -4,6 +4,7 @@ Corresponding Email: haoyinxu@gmail.com
 """
 # import the necessary packages
 from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.utils import check_random_state
 from sklearn.utils.validation import (
     check_X_y,
     check_array,
@@ -109,9 +110,10 @@ class HoeffdingTreeTransformer(BaseTransformer):
             plot_tree(self.transformer, filled=True, fontsize=15)
             plt.show()
 
-    def increment(self, X, y):
+    def chunk_fit(self, X, y, sample_weight=None, check_input=True,
+            X_idx_sorted="deprecated"):
         """
-        Fit the tree incrementally.
+        Fit the tree with data chunks.
 
         Parameters
         ----------
@@ -124,6 +126,6 @@ class HoeffdingTreeTransformer(BaseTransformer):
         if not self.is_fitted():
             self.fit(X, y)
         else:
-            # TODO: Implement the incremental fitting function
+            # TODO: Implement the chunk fitting function
 
             return self

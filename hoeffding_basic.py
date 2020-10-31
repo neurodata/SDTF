@@ -27,10 +27,12 @@ def hoeffding_batch(X, y, confidence):
     range = 1
 
     # calculate the Hoeffding bound
-    ht_bound = math.sqrt((range**2) * math.log(1/(1-confidence)) / (2*n_samples))
+    ht_bound = math.sqrt(
+        (range ** 2) * math.log(1 / (1 - confidence)) / (2 * n_samples)
+    )
 
     # create an empty decision tree
-    ht = DecisionTreeClassifier(max_features=2, min_impurity_decrease=ht_bound)
+    ht = DecisionTreeClassifier(min_impurity_decrease=ht_bound)
     print(ht_bound)
 
     # fit the Hoeffding batch tree

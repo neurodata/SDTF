@@ -10,7 +10,7 @@ setup(
     version="0.0.1",
     author="Haoyin Xu",
     asuthor_email="haoyinxu@gmail.com",
-    description="Streaming Parallel Decision Tree",
+    description="Exploring streaming options for decision tree classifiers",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/PSSF/SPDT/",

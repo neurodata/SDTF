@@ -90,6 +90,7 @@ class NaiveStreamForest:
 
         return major_result
 
+
 class CascadeStreamForest:
     """
     A class used to represent a cascading ensemble of

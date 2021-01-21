@@ -1,2 +1,1 @@
-from .SPDT import *
-from .VFDT import *
+from .forest import *

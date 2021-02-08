@@ -24,7 +24,7 @@ class NaiveStreamForest:
     Attributes
     ----------
     n_estimators : int
-        An integer that represents the amount of stream decision trees.
+        An integer that represents the number of stream decision trees.
 
     forest_ : list of sklearn.tree.DecisionTreeClassifier
         An internal list that contains random
@@ -98,13 +98,17 @@ class CascadeStreamForest:
 
     Attributes
     ----------
+    n_estimators : int
+        An integer that represents the max number of stream decision trees.
+
     forest_ : list of sklearn.tree.DecisionTreeClassifier
         An internal list that contains cascading
         sklearn.tree.DecisionTreeClassifier.
     """
 
-    def __init__(self):
+    def __init__(self, n_estimators=100):
         self.forest_ = []
+        self.n_estimators = n_estimators
 
     def fit(self, X, y):
         """
@@ -128,10 +132,12 @@ class CascadeStreamForest:
         for tree in self.forest_:
             tree.partial_fit(X, y)
 
-        # Add a new decision tree based on new data
-        sdt = DecisionTreeClassifier()
-        sdt.partial_fit(X, y)
-        self.forest_.append(sdt)
+        # Before the maximum number of trees
+        if len(self.forest_) < self.n_estimators:
+            # Add a new decision tree based on new data
+            sdt = DecisionTreeClassifier()
+            sdt.partial_fit(X, y)
+            self.forest_.append(sdt)
 
         return self
 

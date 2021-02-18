@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-REQUIREMENTS = ["scikit-learn"]
+REQUIREMENTS = ["numpy", "scikit-learn", "scipy"]
 
 with open("README.md", mode="r", encoding="utf8") as f:
     LONG_DESCRIPTION = f.read()

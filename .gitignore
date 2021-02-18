@@ -131,8 +131,5 @@ dmypy.json
 # Mac files
 .DS_Store
 
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints
-
 # Temp vim files
 *.swo

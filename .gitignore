@@ -133,3 +133,6 @@ dmypy.json
 
 # Temp vim files
 *.swo
+
+# Data files
+benchmarks/

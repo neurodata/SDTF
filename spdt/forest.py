@@ -31,11 +31,11 @@ class NaiveStreamForest:
         sklearn.tree.DecisionTreeClassifier.
     """
 
-    def __init__(self, n_estimators=100):
+    def __init__(self, n_estimators=100, splitter="best"):
         self.forest_ = []
 
         for i in range(n_estimators):
-            tree = DecisionTreeClassifier()
+            tree = DecisionTreeClassifier(max_features="auto", splitter=splitter)
             self.forest_.append(tree)
 
     def fit(self, X, y):
@@ -101,14 +101,18 @@ class CascadeStreamForest:
     n_estimators : int
         An integer that represents the max number of stream decision trees.
 
+    splitter : str
+        A choice of decision tree splitter
+
     forest_ : list of sklearn.tree.DecisionTreeClassifier
         An internal list that contains cascading
         sklearn.tree.DecisionTreeClassifier.
     """
 
-    def __init__(self, n_estimators=100):
+    def __init__(self, n_estimators=100, splitter="best"):
         self.forest_ = []
         self.n_estimators = n_estimators
+        self.splitter = splitter
 
     def fit(self, X, y):
         """
@@ -135,7 +139,7 @@ class CascadeStreamForest:
         # Before the maximum number of trees
         if len(self.forest_) < self.n_estimators:
             # Add a new decision tree based on new data
-            sdt = DecisionTreeClassifier()
+            sdt = DecisionTreeClassifier(splitter=self.splitter)
             sdt.partial_fit(X, y)
             self.forest_.append(sdt)
 

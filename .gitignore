@@ -135,4 +135,6 @@ dmypy.json
 *.swo
 
 # Data files
-benchmarks/
+benchmarks/*
+!benchmarks/*.py
+!benchmarks/*.ipynb

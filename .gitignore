@@ -138,3 +138,7 @@ dmypy.json
 benchmarks/*
 !benchmarks/*.py
 !benchmarks/*.ipynb
+!benchmarks/mf/
+!benchmarks/ht/
+!benchmarks/sdt/
+!benchmarks/sdf/

@@ -142,3 +142,4 @@ benchmarks/*
 !benchmarks/ht/
 !benchmarks/sdt/
 !benchmarks/sdf/
+!benchmarks/csf/

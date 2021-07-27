@@ -91,6 +91,6 @@ for i in range(100):
     sdt_train_t_l.append(sdt_train_t)
     sdt_test_t_l.append(sdt_test_t)
 
-write_result("sdt/cifar10_acc.txt", sdt_acc_l)
-write_result("sdt/cifar10_train_t.txt", sdt_train_t_l)
-write_result("sdt/cifar10_test_t.txt", sdt_test_t_l)
+    write_result("sdt/cifar10_acc.txt", sdt_acc_l)
+    write_result("sdt/cifar10_train_t.txt", sdt_train_t_l)
+    write_result("sdt/cifar10_test_t.txt", sdt_test_t_l)

@@ -91,6 +91,6 @@ for i in range(100):
     csf_train_t_l.append(csf_train_t)
     csf_test_t_l.append(csf_test_t)
 
-write_result("csf/cifar10_acc.txt", csf_acc_l)
-write_result("csf/cifar10_train_t.txt", csf_train_t_l)
-write_result("csf/cifar10_test_t.txt", csf_test_t_l)
+    write_result("csf/cifar10_acc.txt", csf_acc_l)
+    write_result("csf/cifar10_train_t.txt", csf_train_t_l)
+    write_result("csf/cifar10_test_t.txt", csf_test_t_l)

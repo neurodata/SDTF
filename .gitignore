@@ -143,3 +143,5 @@ benchmarks/*
 !benchmarks/sdt/
 !benchmarks/sdf/
 !benchmarks/csf/
+!benchmarks/dt/
+!benchmarks/rf/

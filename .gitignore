@@ -133,3 +133,15 @@ dmypy.json
 
 # Temp vim files
 *.swo
+
+# Data files
+benchmarks/*
+!benchmarks/*.py
+!benchmarks/*.ipynb
+!benchmarks/mf/
+!benchmarks/ht/
+!benchmarks/sdt/
+!benchmarks/sdf/
+!benchmarks/csf/
+!benchmarks/dt/
+!benchmarks/rf/

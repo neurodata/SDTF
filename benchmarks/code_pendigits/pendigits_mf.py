@@ -4,7 +4,7 @@ Author: Haoyin Xu
 import time
 import numpy as np
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
+from skgarden import MondrianForestClassifier
 
 
 def write_result(filename, acc_ls):
@@ -26,13 +26,13 @@ def prediction(classifier):
     return p_t / X_test.shape[0]
 
 
-def experiment_sdt():
-    """Runs experiments for Stream Decision Tree"""
-    sdt_l = []
+def experiment_mf():
+    """Runs experiments for Mondrian Forest"""
+    mf_l = []
     train_time_l = []
     test_time_l = []
 
-    sdt = DecisionTreeClassifier()
+    mf = MondrianForestClassifier(n_estimators=10)
 
     for i in range(74):
         X_t = X_r[i * 100 : (i + 1) * 100]
@@ -40,13 +40,13 @@ def experiment_sdt():
 
         # Train the model
         start_time = time.perf_counter()
-        sdt.partial_fit(X_t, y_t)
+        mf.partial_fit(X_t, y_t)
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
         # Test the model
         start_time = time.perf_counter()
-        sdt_l.append(prediction(sdt))
+        mf_l.append(prediction(mf))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
@@ -54,7 +54,7 @@ def experiment_sdt():
     for i in range(1, 74):
         train_time_l[i] += train_time_l[i - 1]
 
-    return sdt_l, train_time_l, test_time_l
+    return mf_l, train_time_l, test_time_l
 
 
 # prepare pendigits data
@@ -64,19 +64,19 @@ X_test = pendigits_test.iloc[:, :-1]
 y_test = pendigits_test.iloc[:, -1]
 
 # Perform experiments
-sdt_acc_l = []
-sdt_train_t_l = []
-sdt_test_t_l = []
+mf_acc_l = []
+mf_train_t_l = []
+mf_test_t_l = []
 for i in range(100):
     p = pendigits.sample(frac=1)
     X_r = p.iloc[:, :-1]
     y_r = p.iloc[:, -1]
 
-    sdt_acc, sdt_train_t, sdt_test_t = experiment_sdt()
-    sdt_acc_l.append(sdt_acc)
-    sdt_train_t_l.append(sdt_train_t)
-    sdt_test_t_l.append(sdt_test_t)
+    mf_acc, mf_train_t, mf_test_t = experiment_mf()
+    mf_acc_l.append(mf_acc)
+    mf_train_t_l.append(mf_train_t)
+    mf_test_t_l.append(mf_test_t)
 
-    write_result("sdt/pendigits_acc.txt", sdt_acc_l)
-    write_result("sdt/pendigits_train_t.txt", sdt_train_t_l)
-    write_result("sdt/pendigits_test_t.txt", sdt_test_t_l)
+    write_result("../mf/pendigits_acc.txt", mf_acc_l)
+    write_result("../mf/pendigits_train_t.txt", mf_train_t_l)
+    write_result("../mf/pendigits_test_t.txt", mf_test_t_l)

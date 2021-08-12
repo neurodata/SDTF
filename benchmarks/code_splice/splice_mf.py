@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from numpy.random import permutation
 from sklearn.model_selection import train_test_split
-from spdt import NaiveStreamForest
+from skgarden import MondrianForestClassifier
 
 
 def write_result(filename, acc_ls):
@@ -28,13 +28,13 @@ def prediction(classifier):
     return p_t / X_test.shape[0]
 
 
-def experiment_sdf():
-    """Runs experiments for Stream Decision Forest"""
-    sdf_l = []
+def experiment_mf():
+    """Runs experiments for Mondrian Forest"""
+    mf_l = []
     train_time_l = []
     test_time_l = []
 
-    sdf = NaiveStreamForest()
+    mf = MondrianForestClassifier(n_estimators=10)
 
     for i in range(23):
         X_t = X_r[i * 100 : (i + 1) * 100]
@@ -42,13 +42,13 @@ def experiment_sdf():
 
         # Train the model
         start_time = time.perf_counter()
-        sdf.fit(X_t, y_t)
+        mf.partial_fit(X_t, y_t)
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
         # Test the model
         start_time = time.perf_counter()
-        sdf_l.append(prediction(sdf))
+        mf_l.append(prediction(mf))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
@@ -56,7 +56,7 @@ def experiment_sdf():
     for i in range(1, 23):
         train_time_l[i] += train_time_l[i - 1]
 
-    return sdf_l, train_time_l, test_time_l
+    return mf_l, train_time_l, test_time_l
 
 
 # prepare splice DNA data
@@ -66,20 +66,20 @@ y = df["Label"].values
 X_train, X_test, y_train, y_test = train_test_split(X, y)
 
 # Perform experiments
-sdf_acc_l = []
-sdf_train_t_l = []
-sdf_test_t_l = []
+mf_acc_l = []
+mf_train_t_l = []
+mf_test_t_l = []
 for i in range(100):
     p = permutation(X_train.shape[0])
 
     X_r = X_train[p]
     y_r = y_train[p]
 
-    sdf_acc, sdf_train_t, sdf_test_t = experiment_sdf()
-    sdf_acc_l.append(sdf_acc)
-    sdf_train_t_l.append(sdf_train_t)
-    sdf_test_t_l.append(sdf_test_t)
+    mf_acc, mf_train_t, mf_test_t = experiment_mf()
+    mf_acc_l.append(mf_acc)
+    mf_train_t_l.append(mf_train_t)
+    mf_test_t_l.append(mf_test_t)
 
-    write_result("sdf/splice_acc.txt", sdf_acc_l)
-    write_result("sdf/splice_train_t.txt", sdf_train_t_l)
-    write_result("sdf/splice_test_t.txt", sdf_test_t_l)
+    write_result("../mf/splice_acc.txt", mf_acc_l)
+    write_result("../mf/splice_train_t.txt", mf_train_t_l)
+    write_result("../mf/splice_test_t.txt", mf_test_t_l)

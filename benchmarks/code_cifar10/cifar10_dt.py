@@ -5,7 +5,7 @@ import time
 import numpy as np
 import torchvision.datasets as datasets
 from numpy.random import permutation
-from skgarden import MondrianForestClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 
 def write_result(filename, acc_ls):
@@ -27,35 +27,31 @@ def prediction(classifier):
     return p_t / X_test.shape[0]
 
 
-def experiment_mf():
-    """Runs experiments for Mondrian Forest"""
-    mf_l = []
+def experiment_dt():
+    """Runs experiments for Batch Decision Tree"""
+    dt_l = []
     train_time_l = []
     test_time_l = []
 
-    mf = MondrianForestClassifier(n_estimators=10)
+    dt = DecisionTreeClassifier()
 
     for i in range(500):
-        X_t = X_r[i * 100 : (i + 1) * 100]
-        y_t = y_r[i * 100 : (i + 1) * 100]
+        X_t = X_r[: (i + 1) * 100]
+        y_t = y_r[: (i + 1) * 100]
 
         # Train the model
         start_time = time.perf_counter()
-        mf.partial_fit(X_t, y_t)
+        dt.fit(X_t, y_t)
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
         # Test the model
         start_time = time.perf_counter()
-        mf_l.append(prediction(mf))
+        dt_l.append(prediction(dt))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
-    # Reformat the train times
-    for i in range(1, 500):
-        train_time_l[i] += train_time_l[i - 1]
-
-    return mf_l, train_time_l, test_time_l
+    return dt_l, train_time_l, test_time_l
 
 
 # prepare CIFAR data
@@ -77,20 +73,20 @@ X_train = X_train.reshape(-1, 32 * 32 * 3)
 X_test = X_test.reshape(-1, 32 * 32 * 3)
 
 # Perform experiments
-mf_acc_l = []
-mf_train_t_l = []
-mf_test_t_l = []
+dt_acc_l = []
+dt_train_t_l = []
+dt_test_t_l = []
 for i in range(100):
     p = permutation(X_train.shape[0])
 
     X_r = X_train[p]
     y_r = y_train[p]
 
-    mf_acc, mf_train_t, mf_test_t = experiment_mf()
-    mf_acc_l.append(mf_acc)
-    mf_train_t_l.append(mf_train_t)
-    mf_test_t_l.append(mf_test_t)
+    dt_acc, dt_train_t, dt_test_t = experiment_dt()
+    dt_acc_l.append(dt_acc)
+    dt_train_t_l.append(dt_train_t)
+    dt_test_t_l.append(dt_test_t)
 
-    write_result("mf/cifar10_acc.txt", mf_acc_l)
-    write_result("mf/cifar10_train_t.txt", mf_train_t_l)
-    write_result("mf/cifar10_test_t.txt", mf_test_t_l)
+    write_result("../dt/cifar10_acc.txt", dt_acc_l)
+    write_result("../dt/cifar10_train_t.txt", dt_train_t_l)
+    write_result("../dt/cifar10_test_t.txt", dt_test_t_l)

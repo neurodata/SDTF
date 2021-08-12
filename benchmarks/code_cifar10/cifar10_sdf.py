@@ -91,6 +91,6 @@ for i in range(100):
     sdf_train_t_l.append(sdf_train_t)
     sdf_test_t_l.append(sdf_test_t)
 
-    write_result("sdf/cifar10_acc.txt", sdf_acc_l)
-    write_result("sdf/cifar10_train_t.txt", sdf_train_t_l)
-    write_result("sdf/cifar10_test_t.txt", sdf_test_t_l)
+    write_result("../sdf/cifar10_acc.txt", sdf_acc_l)
+    write_result("../sdf/cifar10_train_t.txt", sdf_train_t_l)
+    write_result("../sdf/cifar10_test_t.txt", sdf_test_t_l)

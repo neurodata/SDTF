@@ -3,9 +3,8 @@ Author: Haoyin Xu
 """
 import time
 import numpy as np
-import pandas as pd
+import torchvision.datasets as datasets
 from numpy.random import permutation
-from sklearn.model_selection import train_test_split
 from river import tree
 
 
@@ -22,13 +21,13 @@ def experiment_ht():
     train_time_l = []
     test_time_l = []
 
-    ht = tree.HoeffdingTreeClassifier()
+    ht = tree.HoeffdingTreeClassifier(max_size=1000)
 
     for i in range(X_train.shape[0]):
         X_t = X_r[i]
         y_t = y_r[i]
 
-        idx = range(60)
+        idx = range(1024)
         X_t = dict(zip(idx, X_t))
 
         start_time = time.perf_counter()
@@ -44,6 +43,7 @@ def experiment_ht():
                 if y_pred == y_test[j]:
                     p_t += 1
             ht_l.append(p_t / X_test.shape[0])
+            print(p_t / X_test.shape[0], i)
             end_time = time.perf_counter()
             test_time_l.append(end_time - start_time)
 
@@ -58,17 +58,30 @@ def experiment_ht():
     return ht_l, train_time_l, test_time_l
 
 
-# prepare splice DNA data
-df = pd.read_csv("dna.csv")
-X = df.drop(["Label"], axis=1).values
-y = df["Label"].values
-X_train, X_test, y_train, y_test = train_test_split(X, y)
+# prepare CIFAR data
+# normalize
+scale = np.mean(np.arange(0, 256))
+normalize = lambda x: (x - scale) / scale
+
+# train data
+cifar_trainset = datasets.CIFAR10(root="./", train=True, download=True, transform=None)
+X_train = normalize(cifar_trainset.data)
+y_train = np.array(cifar_trainset.targets)
+
+# test data
+cifar_testset = datasets.CIFAR10(root="./", train=False, download=True, transform=None)
+X_test = normalize(cifar_testset.data)
+y_test = np.array(cifar_testset.targets)
+
+X_train = X_train.reshape(-1, 32 * 32 * 3)
+X_test = X_test.reshape(-1, 32 * 32 * 3)
 
 # Perform experiments
 ht_acc_l = []
 ht_train_t_l = []
 ht_test_t_l = []
 for i in range(100):
+    print(i)
     p = permutation(X_train.shape[0])
 
     X_r = X_train[p]
@@ -79,6 +92,6 @@ for i in range(100):
     ht_train_t_l.append(ht_train_t)
     ht_test_t_l.append(ht_test_t)
 
-    write_result("ht/splice_acc.txt", ht_acc_l)
-    write_result("ht/splice_train_t.txt", ht_train_t_l)
-    write_result("ht/splice_test_t.txt", ht_test_t_l)
+    write_result("../ht/cifar10_acc.txt", ht_acc_l)
+    write_result("../ht/cifar10_train_t.txt", ht_train_t_l)
+    write_result("../ht/cifar10_test_t.txt", ht_test_t_l)

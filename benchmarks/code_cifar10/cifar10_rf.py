@@ -3,7 +3,8 @@ Author: Haoyin Xu
 """
 import time
 import numpy as np
-import pandas as pd
+import torchvision.datasets as datasets
+from numpy.random import permutation
 from sklearn.ensemble import RandomForestClassifier
 
 
@@ -34,7 +35,7 @@ def experiment_rf():
 
     rf = RandomForestClassifier()
 
-    for i in range(74):
+    for i in range(500):
         X_t = X_r[: (i + 1) * 100]
         y_t = y_r[: (i + 1) * 100]
 
@@ -53,26 +54,39 @@ def experiment_rf():
     return rf_l, train_time_l, test_time_l
 
 
-# prepare pendigits data
-pendigits = pd.read_csv("pendigits.tra", header=None)
-pendigits_test = pd.read_csv("pendigits.tes", header=None)
-X_test = pendigits_test.iloc[:, :-1]
-y_test = pendigits_test.iloc[:, -1]
+# prepare CIFAR data
+# normalize
+scale = np.mean(np.arange(0, 256))
+normalize = lambda x: (x - scale) / scale
+
+# train data
+cifar_trainset = datasets.CIFAR10(root="./", train=True, download=True, transform=None)
+X_train = normalize(cifar_trainset.data)
+y_train = np.array(cifar_trainset.targets)
+
+# test data
+cifar_testset = datasets.CIFAR10(root="./", train=False, download=True, transform=None)
+X_test = normalize(cifar_testset.data)
+y_test = np.array(cifar_testset.targets)
+
+X_train = X_train.reshape(-1, 32 * 32 * 3)
+X_test = X_test.reshape(-1, 32 * 32 * 3)
 
 # Perform experiments
 rf_acc_l = []
 rf_train_t_l = []
 rf_test_t_l = []
 for i in range(100):
-    p = pendigits.sample(frac=1)
-    X_r = p.iloc[:, :-1]
-    y_r = p.iloc[:, -1]
+    p = permutation(X_train.shape[0])
+
+    X_r = X_train[p]
+    y_r = y_train[p]
 
     rf_acc, rf_train_t, rf_test_t = experiment_rf()
     rf_acc_l.append(rf_acc)
     rf_train_t_l.append(rf_train_t)
     rf_test_t_l.append(rf_test_t)
 
-    write_result("rf/pendigits_acc.txt", rf_acc_l)
-    write_result("rf/pendigits_train_t.txt", rf_train_t_l)
-    write_result("rf/pendigits_test_t.txt", rf_test_t_l)
+    write_result("../rf/cifar10_acc.txt", rf_acc_l)
+    write_result("../rf/cifar10_train_t.txt", rf_train_t_l)
+    write_result("../rf/cifar10_test_t.txt", rf_test_t_l)

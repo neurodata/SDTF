@@ -4,7 +4,7 @@ Author: Haoyin Xu
 import time
 import numpy as np
 import pandas as pd
-from spdt import CascadeStreamForest
+from sklearn.ensemble import RandomForestClassifier
 
 
 def write_result(filename, acc_ls):
@@ -26,35 +26,31 @@ def prediction(classifier):
     return p_t / X_test.shape[0]
 
 
-def experiment_csf():
-    """Runs experiments for Cascade Stream Forest"""
-    csf_l = []
+def experiment_rf():
+    """Runs experiments for Random Forest"""
+    rf_l = []
     train_time_l = []
     test_time_l = []
 
-    csf = CascadeStreamForest()
+    rf = RandomForestClassifier()
 
     for i in range(74):
-        X_t = X_r[i * 100 : (i + 1) * 100]
-        y_t = y_r[i * 100 : (i + 1) * 100]
+        X_t = X_r[: (i + 1) * 100]
+        y_t = y_r[: (i + 1) * 100]
 
         # Train the model
         start_time = time.perf_counter()
-        csf.fit(X_t, y_t)
+        rf.fit(X_t, y_t)
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
         # Test the model
         start_time = time.perf_counter()
-        csf_l.append(prediction(csf))
+        rf_l.append(prediction(rf))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
-    # Reformat the train times
-    for i in range(1, 74):
-        train_time_l[i] += train_time_l[i - 1]
-
-    return csf_l, train_time_l, test_time_l
+    return rf_l, train_time_l, test_time_l
 
 
 # prepare pendigits data
@@ -64,19 +60,19 @@ X_test = pendigits_test.iloc[:, :-1]
 y_test = pendigits_test.iloc[:, -1]
 
 # Perform experiments
-csf_acc_l = []
-csf_train_t_l = []
-csf_test_t_l = []
+rf_acc_l = []
+rf_train_t_l = []
+rf_test_t_l = []
 for i in range(100):
     p = pendigits.sample(frac=1)
     X_r = p.iloc[:, :-1]
     y_r = p.iloc[:, -1]
 
-    csf_acc, csf_train_t, csf_test_t = experiment_csf()
-    csf_acc_l.append(csf_acc)
-    csf_train_t_l.append(csf_train_t)
-    csf_test_t_l.append(csf_test_t)
+    rf_acc, rf_train_t, rf_test_t = experiment_rf()
+    rf_acc_l.append(rf_acc)
+    rf_train_t_l.append(rf_train_t)
+    rf_test_t_l.append(rf_test_t)
 
-    write_result("csf/pendigits_acc.txt", csf_acc_l)
-    write_result("csf/pendigits_train_t.txt", csf_train_t_l)
-    write_result("csf/pendigits_test_t.txt", csf_test_t_l)
+    write_result("../rf/pendigits_acc.txt", rf_acc_l)
+    write_result("../rf/pendigits_train_t.txt", rf_train_t_l)
+    write_result("../rf/pendigits_test_t.txt", rf_test_t_l)

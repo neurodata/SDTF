@@ -136,8 +136,9 @@ dmypy.json
 
 # Data files
 benchmarks/*
-!benchmarks/*.py
+!benchmarks/code*/
 !benchmarks/*.ipynb
+!benchmarks/*.pdf
 !benchmarks/mf/
 !benchmarks/ht/
 !benchmarks/sdt/

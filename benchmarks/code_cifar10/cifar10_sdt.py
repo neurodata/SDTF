@@ -5,7 +5,7 @@ import time
 import numpy as np
 import torchvision.datasets as datasets
 from numpy.random import permutation
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 
 def write_result(filename, acc_ls):
@@ -27,31 +27,35 @@ def prediction(classifier):
     return p_t / X_test.shape[0]
 
 
-def experiment_rf():
-    """Runs experiments for Random Forest"""
-    rf_l = []
+def experiment_sdt():
+    """Runs experiments for Stream Decision Tree"""
+    sdt_l = []
     train_time_l = []
     test_time_l = []
 
-    rf = RandomForestClassifier()
+    sdt = DecisionTreeClassifier()
 
     for i in range(500):
-        X_t = X_r[: (i + 1) * 100]
-        y_t = y_r[: (i + 1) * 100]
+        X_t = X_r[i * 100 : (i + 1) * 100]
+        y_t = y_r[i * 100 : (i + 1) * 100]
 
         # Train the model
         start_time = time.perf_counter()
-        rf.fit(X_t, y_t)
+        sdt.partial_fit(X_t, y_t)
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
         # Test the model
         start_time = time.perf_counter()
-        rf_l.append(prediction(rf))
+        sdt_l.append(prediction(sdt))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
-    return rf_l, train_time_l, test_time_l
+    # Reformat the train times
+    for i in range(1, 500):
+        train_time_l[i] += train_time_l[i - 1]
+
+    return sdt_l, train_time_l, test_time_l
 
 
 # prepare CIFAR data
@@ -73,20 +77,20 @@ X_train = X_train.reshape(-1, 32 * 32 * 3)
 X_test = X_test.reshape(-1, 32 * 32 * 3)
 
 # Perform experiments
-rf_acc_l = []
-rf_train_t_l = []
-rf_test_t_l = []
+sdt_acc_l = []
+sdt_train_t_l = []
+sdt_test_t_l = []
 for i in range(100):
     p = permutation(X_train.shape[0])
 
     X_r = X_train[p]
     y_r = y_train[p]
 
-    rf_acc, rf_train_t, rf_test_t = experiment_rf()
-    rf_acc_l.append(rf_acc)
-    rf_train_t_l.append(rf_train_t)
-    rf_test_t_l.append(rf_test_t)
+    sdt_acc, sdt_train_t, sdt_test_t = experiment_sdt()
+    sdt_acc_l.append(sdt_acc)
+    sdt_train_t_l.append(sdt_train_t)
+    sdt_test_t_l.append(sdt_test_t)
 
-    write_result("rf/cifar10_acc.txt", rf_acc_l)
-    write_result("rf/cifar10_train_t.txt", rf_train_t_l)
-    write_result("rf/cifar10_test_t.txt", rf_test_t_l)
+    write_result("../sdt/cifar10_acc.txt", sdt_acc_l)
+    write_result("../sdt/cifar10_train_t.txt", sdt_train_t_l)
+    write_result("../sdt/cifar10_test_t.txt", sdt_test_t_l)

@@ -3,8 +3,7 @@ Author: Haoyin Xu
 """
 import time
 import numpy as np
-import torchvision.datasets as datasets
-from numpy.random import permutation
+import pandas as pd
 from river import tree
 
 
@@ -21,13 +20,13 @@ def experiment_ht():
     train_time_l = []
     test_time_l = []
 
-    ht = tree.HoeffdingTreeClassifier(max_size=1000)
+    ht = tree.HoeffdingTreeClassifier()
 
-    for i in range(X_train.shape[0]):
-        X_t = X_r[i]
-        y_t = y_r[i]
+    for i in range(7400):
+        X_t = X_r.iloc[i]
+        y_t = y_r.iloc[i]
 
-        idx = range(1024)
+        idx = range(16)
         X_t = dict(zip(idx, X_t))
 
         start_time = time.perf_counter()
@@ -39,17 +38,16 @@ def experiment_ht():
             p_t = 0.0
             start_time = time.perf_counter()
             for j in range(X_test.shape[0]):
-                y_pred = ht.predict_one(X_test[j])
-                if y_pred == y_test[j]:
+                y_pred = ht.predict_one(X_test.iloc[j])
+                if y_pred == y_test.iloc[j]:
                     p_t += 1
             ht_l.append(p_t / X_test.shape[0])
-            print(p_t / X_test.shape[0], i)
             end_time = time.perf_counter()
             test_time_l.append(end_time - start_time)
 
     # Reformat the train times
     new_train_time_l = []
-    for i in range(1, X_train.shape[0]):
+    for i in range(1, 7400):
         train_time_l[i] += train_time_l[i - 1]
         if i > 0 and (i + 1) % 100 == 0:
             new_train_time_l.append(train_time_l[i])
@@ -58,40 +56,26 @@ def experiment_ht():
     return ht_l, train_time_l, test_time_l
 
 
-# prepare CIFAR data
-# normalize
-scale = np.mean(np.arange(0, 256))
-normalize = lambda x: (x - scale) / scale
-
-# train data
-cifar_trainset = datasets.CIFAR10(root="./", train=True, download=True, transform=None)
-X_train = normalize(cifar_trainset.data)
-y_train = np.array(cifar_trainset.targets)
-
-# test data
-cifar_testset = datasets.CIFAR10(root="./", train=False, download=True, transform=None)
-X_test = normalize(cifar_testset.data)
-y_test = np.array(cifar_testset.targets)
-
-X_train = X_train.reshape(-1, 32 * 32 * 3)
-X_test = X_test.reshape(-1, 32 * 32 * 3)
+# prepare pendigits data
+pendigits = pd.read_csv("pendigits.tra", header=None)
+pendigits_test = pd.read_csv("pendigits.tes", header=None)
+X_test = pendigits_test.iloc[:, :-1]
+y_test = pendigits_test.iloc[:, -1]
 
 # Perform experiments
 ht_acc_l = []
 ht_train_t_l = []
 ht_test_t_l = []
 for i in range(100):
-    print(i)
-    p = permutation(X_train.shape[0])
-
-    X_r = X_train[p]
-    y_r = y_train[p]
+    p = pendigits.sample(frac=1)
+    X_r = p.iloc[:, :-1]
+    y_r = p.iloc[:, -1]
 
     ht_acc, ht_train_t, ht_test_t = experiment_ht()
     ht_acc_l.append(ht_acc)
     ht_train_t_l.append(ht_train_t)
     ht_test_t_l.append(ht_test_t)
 
-    write_result("ht/cifar10_acc.txt", ht_acc_l)
-    write_result("ht/cifar10_train_t.txt", ht_train_t_l)
-    write_result("ht/cifar10_test_t.txt", ht_test_t_l)
+    write_result("../ht/pendigits_acc.txt", ht_acc_l)
+    write_result("../ht/pendigits_train_t.txt", ht_train_t_l)
+    write_result("../ht/pendigits_test_t.txt", ht_test_t_l)

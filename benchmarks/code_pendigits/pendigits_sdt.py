@@ -26,31 +26,35 @@ def prediction(classifier):
     return p_t / X_test.shape[0]
 
 
-def experiment_dt():
-    """Runs experiments for Batch Decision Tree"""
-    dt_l = []
+def experiment_sdt():
+    """Runs experiments for Stream Decision Tree"""
+    sdt_l = []
     train_time_l = []
     test_time_l = []
 
-    dt = DecisionTreeClassifier()
+    sdt = DecisionTreeClassifier()
 
     for i in range(74):
-        X_t = X_r[: (i + 1) * 100]
-        y_t = y_r[: (i + 1) * 100]
+        X_t = X_r[i * 100 : (i + 1) * 100]
+        y_t = y_r[i * 100 : (i + 1) * 100]
 
         # Train the model
         start_time = time.perf_counter()
-        dt.fit(X_t, y_t)
+        sdt.partial_fit(X_t, y_t)
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
         # Test the model
         start_time = time.perf_counter()
-        dt_l.append(prediction(dt))
+        sdt_l.append(prediction(sdt))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
-    return dt_l, train_time_l, test_time_l
+    # Reformat the train times
+    for i in range(1, 74):
+        train_time_l[i] += train_time_l[i - 1]
+
+    return sdt_l, train_time_l, test_time_l
 
 
 # prepare pendigits data
@@ -60,19 +64,19 @@ X_test = pendigits_test.iloc[:, :-1]
 y_test = pendigits_test.iloc[:, -1]
 
 # Perform experiments
-dt_acc_l = []
-dt_train_t_l = []
-dt_test_t_l = []
+sdt_acc_l = []
+sdt_train_t_l = []
+sdt_test_t_l = []
 for i in range(100):
     p = pendigits.sample(frac=1)
     X_r = p.iloc[:, :-1]
     y_r = p.iloc[:, -1]
 
-    dt_acc, dt_train_t, dt_test_t = experiment_dt()
-    dt_acc_l.append(dt_acc)
-    dt_train_t_l.append(dt_train_t)
-    dt_test_t_l.append(dt_test_t)
+    sdt_acc, sdt_train_t, sdt_test_t = experiment_sdt()
+    sdt_acc_l.append(sdt_acc)
+    sdt_train_t_l.append(sdt_train_t)
+    sdt_test_t_l.append(sdt_test_t)
 
-    write_result("dt/pendigits_acc.txt", dt_acc_l)
-    write_result("dt/pendigits_train_t.txt", dt_train_t_l)
-    write_result("dt/pendigits_test_t.txt", dt_test_t_l)
+    write_result("../sdt/pendigits_acc.txt", sdt_acc_l)
+    write_result("../sdt/pendigits_train_t.txt", sdt_train_t_l)
+    write_result("../sdt/pendigits_test_t.txt", sdt_test_t_l)

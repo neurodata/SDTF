@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from numpy.random import permutation
 from sklearn.model_selection import train_test_split
-from spdt import CascadeStreamForest
+from sklearn.tree import DecisionTreeClassifier
 
 
 def write_result(filename, acc_ls):
@@ -28,35 +28,31 @@ def prediction(classifier):
     return p_t / X_test.shape[0]
 
 
-def experiment_csf():
-    """Runs experiments for Cascade Stream Forest"""
-    csf_l = []
+def experiment_dt():
+    """Runs experiments for Batch Decision Tree"""
+    dt_l = []
     train_time_l = []
     test_time_l = []
 
-    csf = CascadeStreamForest()
+    dt = DecisionTreeClassifier()
 
     for i in range(23):
-        X_t = X_r[i * 100 : (i + 1) * 100]
-        y_t = y_r[i * 100 : (i + 1) * 100]
+        X_t = X_r[: (i + 1) * 100]
+        y_t = y_r[: (i + 1) * 100]
 
         # Train the model
         start_time = time.perf_counter()
-        csf.fit(X_t, y_t)
+        dt.fit(X_t, y_t)
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
         # Test the model
         start_time = time.perf_counter()
-        csf_l.append(prediction(csf))
+        dt_l.append(prediction(dt))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
-    # Reformat the train times
-    for i in range(1, 23):
-        train_time_l[i] += train_time_l[i - 1]
-
-    return csf_l, train_time_l, test_time_l
+    return dt_l, train_time_l, test_time_l
 
 
 # prepare splice DNA data
@@ -66,20 +62,20 @@ y = df["Label"].values
 X_train, X_test, y_train, y_test = train_test_split(X, y)
 
 # Perform experiments
-csf_acc_l = []
-csf_train_t_l = []
-csf_test_t_l = []
+dt_acc_l = []
+dt_train_t_l = []
+dt_test_t_l = []
 for i in range(100):
     p = permutation(X_train.shape[0])
 
     X_r = X_train[p]
     y_r = y_train[p]
 
-    csf_acc, csf_train_t, csf_test_t = experiment_csf()
-    csf_acc_l.append(csf_acc)
-    csf_train_t_l.append(csf_train_t)
-    csf_test_t_l.append(csf_test_t)
+    dt_acc, dt_train_t, dt_test_t = experiment_dt()
+    dt_acc_l.append(dt_acc)
+    dt_train_t_l.append(dt_train_t)
+    dt_test_t_l.append(dt_test_t)
 
-    write_result("csf/splice_acc.txt", csf_acc_l)
-    write_result("csf/splice_train_t.txt", csf_train_t_l)
-    write_result("csf/splice_test_t.txt", csf_test_t_l)
+    write_result("../dt/splice_acc.txt", dt_acc_l)
+    write_result("../dt/splice_train_t.txt", dt_train_t_l)
+    write_result("../dt/splice_test_t.txt", dt_test_t_l)

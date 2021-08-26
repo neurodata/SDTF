@@ -3,8 +3,7 @@ Author: Haoyin Xu
 """
 import time
 import numpy as np
-import torchvision.datasets as datasets
-from numpy.random import permutation
+import pandas as pd
 from spdt import CascadeStreamForest
 
 
@@ -35,7 +34,7 @@ def experiment_csf():
 
     csf = CascadeStreamForest()
 
-    for i in range(500):
+    for i in range(74):
         X_t = X_r[i * 100 : (i + 1) * 100]
         y_t = y_r[i * 100 : (i + 1) * 100]
 
@@ -52,45 +51,32 @@ def experiment_csf():
         test_time_l.append(end_time - start_time)
 
     # Reformat the train times
-    for i in range(1, 500):
+    for i in range(1, 74):
         train_time_l[i] += train_time_l[i - 1]
 
     return csf_l, train_time_l, test_time_l
 
 
-# prepare CIFAR data
-# normalize
-scale = np.mean(np.arange(0, 256))
-normalize = lambda x: (x - scale) / scale
-
-# train data
-cifar_trainset = datasets.CIFAR10(root="./", train=True, download=True, transform=None)
-X_train = normalize(cifar_trainset.data)
-y_train = np.array(cifar_trainset.targets)
-
-# test data
-cifar_testset = datasets.CIFAR10(root="./", train=False, download=True, transform=None)
-X_test = normalize(cifar_testset.data)
-y_test = np.array(cifar_testset.targets)
-
-X_train = X_train.reshape(-1, 32 * 32 * 3)
-X_test = X_test.reshape(-1, 32 * 32 * 3)
+# prepare pendigits data
+pendigits = pd.read_csv("pendigits.tra", header=None)
+pendigits_test = pd.read_csv("pendigits.tes", header=None)
+X_test = pendigits_test.iloc[:, :-1]
+y_test = pendigits_test.iloc[:, -1]
 
 # Perform experiments
 csf_acc_l = []
 csf_train_t_l = []
 csf_test_t_l = []
 for i in range(100):
-    p = permutation(X_train.shape[0])
-
-    X_r = X_train[p]
-    y_r = y_train[p]
+    p = pendigits.sample(frac=1)
+    X_r = p.iloc[:, :-1]
+    y_r = p.iloc[:, -1]
 
     csf_acc, csf_train_t, csf_test_t = experiment_csf()
     csf_acc_l.append(csf_acc)
     csf_train_t_l.append(csf_train_t)
     csf_test_t_l.append(csf_test_t)
 
-    write_result("csf/cifar10_acc.txt", csf_acc_l)
-    write_result("csf/cifar10_train_t.txt", csf_train_t_l)
-    write_result("csf/cifar10_test_t.txt", csf_test_t_l)
+    write_result("../csf/pendigits_acc.txt", csf_acc_l)
+    write_result("../csf/pendigits_train_t.txt", csf_train_t_l)
+    write_result("../csf/pendigits_test_t.txt", csf_test_t_l)

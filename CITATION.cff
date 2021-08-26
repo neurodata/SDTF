@@ -1,0 +1,20 @@
+# YAML 1.2
+---
+authors:
+  -
+    affiliation: "Johns Hopkins University, Baltimore, MD"
+    family-names: Xu
+    given-names: Haoyin
+    orcid: "https://orcid.org/0000-0001-8235-4950"
+  -
+    affiliation: "Johns Hopkins University, Baltimore, MD"
+    family-names: Vogelstein
+    given-names: Joshua
+    orcid: "https://orcid.org/0000-0003-2487-6237"
+cff-version: "1.1.0"
+license: MIT
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://github.com/PSSF23/SPDT"
+title: "Stream Decision Trees & Forests"
+version: "0.0.1"
+...

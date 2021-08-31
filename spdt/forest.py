@@ -16,7 +16,7 @@ from sklearn.utils.validation import (
 )
 
 
-class NaiveStreamForest:
+class StreamForest:
     """
     A class used to represent a naive ensemble of
     random stream decision trees.

@@ -5,7 +5,7 @@ import time
 import numpy as np
 import torchvision.datasets as datasets
 from numpy.random import permutation
-from spdt import NaiveStreamForest
+from spdt import StreamForest
 
 
 def write_result(filename, acc_ls):
@@ -33,7 +33,7 @@ def experiment_sdf():
     train_time_l = []
     test_time_l = []
 
-    sdf = NaiveStreamForest()
+    sdf = StreamForest()
 
     for i in range(500):
         X_t = X_r[i * 100 : (i + 1) * 100]

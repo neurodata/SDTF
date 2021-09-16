@@ -4,9 +4,6 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)
 
-
-Based on [this issue](https://github.com/neurodata/ProgLearn/issues/34) from the [ProgLearn](https://github.com/neurodata/ProgLearn) project.
-
 ## Relevant Repos
 
 - [huawei-noah/streamDM](https://github.com/huawei-noah/streamDM)

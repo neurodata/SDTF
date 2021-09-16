@@ -40,7 +40,7 @@ def experiment_sdf():
 
         # Train the model
         start_time = time.perf_counter()
-        sdf.fit(X_t, y_t)
+        sdf.fit(X_t, y_t, classes=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
@@ -67,7 +67,7 @@ y_test = pendigits_test.iloc[:, -1]
 sdf_acc_l = []
 sdf_train_t_l = []
 sdf_test_t_l = []
-for i in range(100):
+for i in range(10):
     p = pendigits.sample(frac=1)
     X_r = p.iloc[:, :-1]
     y_r = p.iloc[:, -1]

@@ -38,7 +38,7 @@ class StreamForest:
             tree = DecisionTreeClassifier(max_features="auto", splitter=splitter)
             self.forest_.append(tree)
 
-    def fit(self, X, y):
+    def fit(self, X, y, classes=None):
         """
         Fits the forest to data X with labels y.
 
@@ -61,7 +61,7 @@ class StreamForest:
             p = permutation(X.shape[0])
             X_r = X[p]
             y_r = y[p]
-            tree.partial_fit(X_r, y_r)
+            tree.partial_fit(X_r, y_r, classes=classes)
 
         return self
 
@@ -114,7 +114,7 @@ class CascadeStreamForest:
         self.n_estimators = n_estimators
         self.splitter = splitter
 
-    def fit(self, X, y):
+    def fit(self, X, y, classes=None):
         """
         Fits the forest to data X with labels y.
 
@@ -134,13 +134,13 @@ class CascadeStreamForest:
 
         # Update existing stream decision trees
         for tree in self.forest_:
-            tree.partial_fit(X, y)
+            tree.partial_fit(X, y, classes=classes)
 
         # Before the maximum number of trees
         if len(self.forest_) < self.n_estimators:
             # Add a new decision tree based on new data
             sdt = DecisionTreeClassifier(splitter=self.splitter)
-            sdt.partial_fit(X, y)
+            sdt.partial_fit(X, y, classes=classes)
             self.forest_.append(sdt)
 
         return self

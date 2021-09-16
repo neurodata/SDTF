@@ -80,7 +80,7 @@ X_test = X_test.reshape(-1, 32 * 32 * 3)
 ht_acc_l = []
 ht_train_t_l = []
 ht_test_t_l = []
-for i in range(100):
+for i in range(10):
     print(i)
     p = permutation(X_train.shape[0])
 

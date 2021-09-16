@@ -67,7 +67,7 @@ y_test = pendigits_test.iloc[:, -1]
 mf_acc_l = []
 mf_train_t_l = []
 mf_test_t_l = []
-for i in range(100):
+for i in range(10):
     p = pendigits.sample(frac=1)
     X_r = p.iloc[:, :-1]
     y_r = p.iloc[:, -1]

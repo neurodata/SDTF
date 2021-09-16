@@ -42,7 +42,7 @@ def experiment_sdt():
 
         # Train the model
         start_time = time.perf_counter()
-        sdt.partial_fit(X_t, y_t)
+        sdt.partial_fit(X_t, y_t, classes=[0, 1, 2])
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
@@ -69,7 +69,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y)
 sdt_acc_l = []
 sdt_train_t_l = []
 sdt_test_t_l = []
-for i in range(100):
+for i in range(10):
     p = permutation(X_train.shape[0])
 
     X_r = X_train[p]

@@ -42,7 +42,7 @@ def experiment_sdf():
 
         # Train the model
         start_time = time.perf_counter()
-        sdf.fit(X_t, y_t)
+        sdf.fit(X_t, y_t, classes=[0, 1, 2])
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
@@ -69,7 +69,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y)
 sdf_acc_l = []
 sdf_train_t_l = []
 sdf_test_t_l = []
-for i in range(100):
+for i in range(10):
     p = permutation(X_train.shape[0])
 
     X_r = X_train[p]

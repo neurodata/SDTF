@@ -66,7 +66,7 @@ y_test = pendigits_test.iloc[:, -1]
 ht_acc_l = []
 ht_train_t_l = []
 ht_test_t_l = []
-for i in range(100):
+for i in range(10):
     p = pendigits.sample(frac=1)
     X_r = p.iloc[:, :-1]
     y_r = p.iloc[:, -1]

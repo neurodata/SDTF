@@ -65,7 +65,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y)
 dt_acc_l = []
 dt_train_t_l = []
 dt_test_t_l = []
-for i in range(100):
+for i in range(10):
     p = permutation(X_train.shape[0])
 
     X_r = X_train[p]

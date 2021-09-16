@@ -76,7 +76,7 @@ X_test = X_test.reshape(-1, 32 * 32 * 3)
 dt_acc_l = []
 dt_train_t_l = []
 dt_test_t_l = []
-for i in range(100):
+for i in range(10):
     p = permutation(X_train.shape[0])
 
     X_r = X_train[p]

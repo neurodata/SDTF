@@ -63,7 +63,7 @@ y_test = pendigits_test.iloc[:, -1]
 rf_acc_l = []
 rf_train_t_l = []
 rf_test_t_l = []
-for i in range(100):
+for i in range(10):
     p = pendigits.sample(frac=1)
     X_r = p.iloc[:, :-1]
     y_r = p.iloc[:, -1]

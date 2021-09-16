@@ -60,7 +60,7 @@ def experiment_mf():
 
 
 # prepare splice DNA data
-df = pd.read_csv("dna.csv")
+df = pd.read_csv("../dna.csv")
 X = df.drop(["Label"], axis=1).values
 y = df["Label"].values
 X_train, X_test, y_train, y_test = train_test_split(X, y)

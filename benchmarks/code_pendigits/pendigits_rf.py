@@ -54,8 +54,8 @@ def experiment_rf():
 
 
 # prepare pendigits data
-pendigits = pd.read_csv("pendigits.tra", header=None)
-pendigits_test = pd.read_csv("pendigits.tes", header=None)
+pendigits = pd.read_csv("../pendigits.tra", header=None)
+pendigits_test = pd.read_csv("../pendigits.tes", header=None)
 X_test = pendigits_test.iloc[:, :-1]
 y_test = pendigits_test.iloc[:, -1]
 

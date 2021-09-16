@@ -64,12 +64,12 @@ scale = np.mean(np.arange(0, 256))
 normalize = lambda x: (x - scale) / scale
 
 # train data
-cifar_trainset = datasets.CIFAR10(root="./", train=True, download=True, transform=None)
+cifar_trainset = datasets.CIFAR10(root="../", train=True, download=True, transform=None)
 X_train = normalize(cifar_trainset.data)
 y_train = np.array(cifar_trainset.targets)
 
 # test data
-cifar_testset = datasets.CIFAR10(root="./", train=False, download=True, transform=None)
+cifar_testset = datasets.CIFAR10(root="../", train=False, download=True, transform=None)
 X_test = normalize(cifar_testset.data)
 y_test = np.array(cifar_testset.targets)
 

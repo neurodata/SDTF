@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from numpy.random import permutation
 from sklearn.model_selection import train_test_split
-from spdt import StreamForest
+from spdt import StreamDecisionForest
 
 
 def write_result(filename, acc_ls):
@@ -34,7 +34,7 @@ def experiment_sdf():
     train_time_l = []
     test_time_l = []
 
-    sdf = StreamForest()
+    sdf = StreamDecisionForest()
 
     for i in range(23):
         X_t = X_r[i * 100 : (i + 1) * 100]
@@ -42,7 +42,7 @@ def experiment_sdf():
 
         # Train the model
         start_time = time.perf_counter()
-        sdf.fit(X_t, y_t, classes=[0, 1, 2])
+        sdf.partial_fit(X_t, y_t, classes=[0, 1, 2])
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 

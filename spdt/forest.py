@@ -16,7 +16,7 @@ from sklearn.utils.validation import (
 )
 
 
-class StreamForest:
+class StreamDecisionForest:
     """
     A class used to represent a naive ensemble of
     random stream decision trees.
@@ -38,9 +38,9 @@ class StreamForest:
             tree = DecisionTreeClassifier(max_features="auto", splitter=splitter)
             self.forest_.append(tree)
 
-    def fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None):
         """
-        Fits the forest to data X with labels y.
+        Partially fits the forest to data X with labels y.
 
         Parameters
         ----------
@@ -114,9 +114,9 @@ class CascadeStreamForest:
         self.n_estimators = n_estimators
         self.splitter = splitter
 
-    def fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None):
         """
-        Fits the forest to data X with labels y.
+        Partially fits the forest to data X with labels y.
 
         Parameters
         ----------

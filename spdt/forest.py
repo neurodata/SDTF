@@ -51,7 +51,7 @@ class StreamDecisionForest:
 
         Returns
         -------
-        self : TreeClassificationTransformer
+        self : StreamDecisionForest
             The object itself.
         """
         X, y = check_X_y(X, y)
@@ -127,7 +127,7 @@ class CascadeStreamForest:
 
         Returns
         -------
-        self : TreeClassificationTransformer
+        self : CascadeStreamForest
             The object itself.
         """
         X, y = check_X_y(X, y)

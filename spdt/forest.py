@@ -138,11 +138,14 @@ class CascadeStreamForest:
         sklearn.tree.DecisionTreeClassifier.
     """
 
-    def __init__(self, n_estimators=100, splitter="best", n_jobs=None):
+    def __init__(
+        self, n_estimators=100, splitter="best", max_features="sqrt", n_jobs=None
+    ):
         self.forest_ = []
         self.n_estimators = n_estimators
         self.splitter = splitter
         self.n_jobs = n_jobs
+        self.max_features = max_features
 
     def partial_fit(self, X, y, classes=None):
         """
@@ -164,14 +167,16 @@ class CascadeStreamForest:
 
         # Update existing stream decision trees
         trees = Parallel(n_jobs=self.n_jobs)(
-            delayed(tree.partial_fit)(X, y, classes=classes) for tree in self.forest_
+            delayed(_partial_fit)(tree, X, y, classes=classes) for tree in self.forest_
         )
         self.forest_ = trees
 
         # Before the maximum number of trees
         if len(self.forest_) < self.n_estimators:
             # Add a new decision tree based on new data
-            sdt = DecisionTreeClassifier(splitter=self.splitter)
+            sdt = DecisionTreeClassifier(
+                splitter=self.splitter, max_features=self.max_features
+            )
             sdt.partial_fit(X, y, classes=classes)
             self.forest_.append(sdt)
 

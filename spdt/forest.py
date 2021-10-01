@@ -14,6 +14,33 @@ from sklearn.utils.validation import (
     check_X_y,
     check_array,
 )
+from joblib import Parallel, delayed
+
+
+def _partial_fit(tree, X, y, classes=None):
+    """
+    Internal function to partially fit a tree.
+
+    Parameters
+    ----------
+    tree : DecisionTreeClassifier
+        Tree to be partially fitted.
+    X : ndarray
+        Input data matrix.
+    y : ndarray
+        Output (i.e. response data matrix).
+
+    Returns
+    -------
+    tree : DecisionTreeClassifier
+        The fitted decision tree.
+    """
+    p = permutation(X.shape[0])
+    X_r = X[p]
+    y_r = y[p]
+    tree.partial_fit(X_r, y_r, classes=classes)
+
+    return tree
 
 
 class StreamDecisionForest:
@@ -31,11 +58,14 @@ class StreamDecisionForest:
         sklearn.tree.DecisionTreeClassifier.
     """
 
-    def __init__(self, n_estimators=100, splitter="best"):
+    def __init__(
+        self, n_estimators=100, splitter="best", max_features="sqrt", n_jobs=None
+    ):
         self.forest_ = []
+        self.n_jobs = n_jobs
 
         for i in range(n_estimators):
-            tree = DecisionTreeClassifier(max_features="auto", splitter=splitter)
+            tree = DecisionTreeClassifier(max_features=max_features, splitter=splitter)
             self.forest_.append(tree)
 
     def partial_fit(self, X, y, classes=None):
@@ -57,11 +87,10 @@ class StreamDecisionForest:
         X, y = check_X_y(X, y)
 
         # Update stream decision trees with random inputs
-        for tree in self.forest_:
-            p = permutation(X.shape[0])
-            X_r = X[p]
-            y_r = y[p]
-            tree.partial_fit(X_r, y_r, classes=classes)
+        trees = Parallel(n_jobs=self.n_jobs)(
+            delayed(_partial_fit)(tree, X, y, classes=classes) for tree in self.forest_
+        )
+        self.forest_ = trees
 
         return self
 
@@ -109,10 +138,11 @@ class CascadeStreamForest:
         sklearn.tree.DecisionTreeClassifier.
     """
 
-    def __init__(self, n_estimators=100, splitter="best"):
+    def __init__(self, n_estimators=100, splitter="best", n_jobs=None):
         self.forest_ = []
         self.n_estimators = n_estimators
         self.splitter = splitter
+        self.n_jobs = n_jobs
 
     def partial_fit(self, X, y, classes=None):
         """
@@ -133,8 +163,10 @@ class CascadeStreamForest:
         X, y = check_X_y(X, y)
 
         # Update existing stream decision trees
-        for tree in self.forest_:
-            tree.partial_fit(X, y, classes=classes)
+        trees = Parallel(n_jobs=self.n_jobs)(
+            delayed(tree.partial_fit)(X, y, classes=classes) for tree in self.forest_
+        )
+        self.forest_ = trees
 
         # Before the maximum number of trees
         if len(self.forest_) < self.n_estimators:

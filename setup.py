@@ -7,7 +7,7 @@ with open("README.md", mode="r", encoding="utf8") as f:
 
 setup(
     name="spdt",
-    version="0.0.1",
+    version="0.0.2",
     author="Haoyin Xu",
     author_email="haoyinxu@gmail.com",
     description="Exploring streaming options for decision tree classifiers",

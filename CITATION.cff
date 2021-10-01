@@ -25,5 +25,5 @@ license: MIT
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/PSSF23/SPDT"
 title: "Stream Decision Trees & Forests"
-version: "0.0.1"
+version: "0.0.2"
 ...

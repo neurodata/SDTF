@@ -177,7 +177,7 @@ class CascadeStreamForest:
             sdt = DecisionTreeClassifier(
                 splitter=self.splitter, max_features=self.max_features
             )
-            sdt.partial_fit(X, y, classes=classes)
+            _partial_fit(sdt, X, y, classes=classes)
             self.forest_.append(sdt)
 
         return self

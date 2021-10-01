@@ -8,6 +8,15 @@ authors:
     orcid: "https://orcid.org/0000-0001-8235-4950"
   -
     affiliation: "Johns Hopkins University, Baltimore, MD"
+    family-names: Dey
+    given-names: Jayanta
+  -
+    affiliation: "Johns Hopkins University, Baltimore, MD"
+    family-names: Panda
+    given-names: Sambit
+    orcid: "https://orcid.org/0000-0001-8455-4243"
+  -
+    affiliation: "Johns Hopkins University, Baltimore, MD"
     family-names: Vogelstein
     given-names: Joshua
     orcid: "https://orcid.org/0000-0003-2487-6237"

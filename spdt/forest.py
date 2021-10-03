@@ -50,8 +50,26 @@ class StreamDecisionForest:
 
     Attributes
     ----------
-    n_estimators : int
+    n_estimators : int, default=100
         An integer that represents the number of stream decision trees.
+
+    splitter : {"best", "random"}, default="best"
+        The strategy used to choose the split at each node. Supported
+        strategies are "best" to choose the best split and "random" to choose
+        the best random split.
+
+    max_features : {"sqrt", "log2"}, int or float, default="sqrt"
+        The number of features to consider when looking for the best split:
+        - If int, then consider `max_features` features at each split.
+        - If float, then `max_features` is a fraction and
+          `round(max_features * n_features)` features are considered at each
+          split.
+        - If "sqrt", then `max_features=sqrt(n_features)`.
+        - If "log2", then `max_features=log2(n_features)`.
+        - If None, then `max_features=n_features`.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel.
 
     forest_ : list of sklearn.tree.DecisionTreeClassifier
         An internal list that contains random
@@ -110,10 +128,9 @@ class StreamDecisionForest:
         """
         X = check_array(X)
 
-        results = []
-        for tree in self.forest_:
-            result = tree.predict(X)
-            results.append(result)
+        results = Parallel(n_jobs=self.n_jobs)(
+            delayed(tree.predict)(X) for tree in self.forest_
+        )
 
         major_result = stats.mode(results)[0][0]
 
@@ -127,11 +144,26 @@ class CascadeStreamForest:
 
     Attributes
     ----------
-    n_estimators : int
+    n_estimators : int, default=100
         An integer that represents the max number of stream decision trees.
 
-    splitter : str
-        A choice of decision tree splitter
+    splitter : {"best", "random"}, default="best"
+        The strategy used to choose the split at each node. Supported
+        strategies are "best" to choose the best split and "random" to choose
+        the best random split.
+
+    max_features : {"sqrt", "log2"}, int or float, default="sqrt"
+        The number of features to consider when looking for the best split:
+        - If int, then consider `max_features` features at each split.
+        - If float, then `max_features` is a fraction and
+          `round(max_features * n_features)` features are considered at each
+          split.
+        - If "sqrt", then `max_features=sqrt(n_features)`.
+        - If "log2", then `max_features=log2(n_features)`.
+        - If None, then `max_features=n_features`.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel.
 
     forest_ : list of sklearn.tree.DecisionTreeClassifier
         An internal list that contains cascading
@@ -198,10 +230,9 @@ class CascadeStreamForest:
         """
         X = check_array(X)
 
-        results = []
-        for tree in self.forest_:
-            result = tree.predict(X)
-            results.append(result)
+        results = Parallel(n_jobs=self.n_jobs)(
+            delayed(tree.predict)(X) for tree in self.forest_
+        )
 
         major_result = stats.mode(results)[0][0]
 

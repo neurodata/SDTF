@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from numpy.random import permutation
 from sklearn.model_selection import train_test_split
-from spdt import CascadeStreamForest
+from sdtf import CascadeStreamForest
 
 
 def write_result(filename, acc_ls):

@@ -4,7 +4,7 @@ Author: Haoyin Xu
 import time
 import numpy as np
 import pandas as pd
-from spdt import CascadeStreamForest
+from sdtf import CascadeStreamForest
 
 
 def write_result(filename, acc_ls):

@@ -23,7 +23,7 @@ authors:
 cff-version: "1.1.0"
 license: MIT
 message: "If you use this software, please cite it using these metadata."
-repository-code: "https://github.com/PSSF23/SPDT"
-title: "Stream Decision Trees & Forests"
+repository-code: "https://github.com/neurodata/SDTF"
+title: "Streaming Decision Trees & Forests"
 version: "0.0.2"
 ...

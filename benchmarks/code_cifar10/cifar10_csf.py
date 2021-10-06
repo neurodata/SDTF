@@ -5,7 +5,7 @@ import time
 import numpy as np
 import torchvision.datasets as datasets
 from numpy.random import permutation
-from spdt import CascadeStreamForest
+from sdtf import CascadeStreamForest
 
 
 def write_result(filename, acc_ls):

@@ -7,17 +7,20 @@ with open("README.md", mode="r", encoding="utf8") as f:
 
 setup(
     name="sdtf",
-    version="0.0.2",
+    version="0.0.1",
     author="Haoyin Xu",
     author_email="haoyinxu@gmail.com",
-    description="Exploring streaming options for decision tree and forests. Based on scikit-learn fork.",
+    description="Exploring streaming options for decision trees and random forests. Based on scikit-learn fork.",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/neurodata/SDTF",
+    download_url="https://codeload.github.com/neurodata/SDTF/tar.gz/v0.0.1",
+    keywords=["Streaming Trees", "Machine Learning", "Decision Trees"],
     license="MIT",
     classifiers=[
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
-        "Topic :: Scientific/Engineering :: Mathematics",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
     ],

@@ -6,6 +6,13 @@
 [![License](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)
 [![Downloads](https://img.shields.io/pypi/dm/sdtf.svg)](https://pypi.org/project/sdtf/#files)
 
+Exploring streaming options for decision trees and random forests.
+
+The package includes two ensemble implementations (Stream Decision Forest and Cascade Stream Forest).
+
+Based on `scikit-learn` [fork](https://github.com/neurodata/scikit-learn/tree/stream).
+
+
 ## Relevant Repos
 
 - [huawei-noah/streamDM](https://github.com/huawei-noah/streamDM)

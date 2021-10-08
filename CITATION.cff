@@ -25,5 +25,5 @@ license: MIT
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/neurodata/SDTF"
 title: "Streaming Decision Trees & Forests"
-version: "0.0.2"
+version: "0.0.3"
 ...

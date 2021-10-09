@@ -1,5 +1,7 @@
 from setuptools import setup, find_packages
 
+VERSION = "0.0.3"
+
 REQUIREMENTS = ["numpy", "scikit-learn", "scipy"]
 
 with open("README.md", mode="r", encoding="utf8") as f:
@@ -7,14 +9,14 @@ with open("README.md", mode="r", encoding="utf8") as f:
 
 setup(
     name="sdtf",
-    version="0.0.3",
+    version=VERSION,
     author="Haoyin Xu",
     author_email="haoyinxu@gmail.com",
     description="Exploring streaming options for decision trees and random forests. Based on scikit-learn fork.",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/neurodata/SDTF",
-    download_url="https://codeload.github.com/neurodata/SDTF/tar.gz/v0.0.3",
+    download_url="https://codeload.github.com/neurodata/SDTF/tar.gz/v" + VERSION,
     keywords=["Streaming Trees", "Machine Learning", "Decision Trees"],
     license="MIT",
     classifiers=[

@@ -1,0 +1,193 @@
+\begin{thebibliography}{28}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Jordan and Mitchell(2015)]{Jordan2015}
+M.~I. Jordan and T.~M. Mitchell.
+\newblock Machine learning: Trends, perspectives, and prospects.
+\newblock \emph{Science}, 349\penalty0 (6245):\penalty0 255--260, 2015.
+
+\bibitem[Domingos and Hulten(2000)]{hoeffding}
+Pedro Domingos and Geoff Hulten.
+\newblock Mining high-speed data streams.
+\newblock In \emph{Proceedings of the Sixth ACM SIGKDD International Conference
+  on Knowledge Discovery and Data Mining}, KDD '00, pages 71--80, New York, NY,
+  USA, 2000. Association for Computing Machinery.
+
+\bibitem[Caruana and Niculescu-Mizil(2006)]{Caruana2006-wp}
+Rich Caruana and Alexandru Niculescu-Mizil.
+\newblock An empirical comparison of supervised learning algorithms.
+\newblock In \emph{Proceedings of the 23rd International Conference on Machine
+  Learning}, ICML '06, pages 161--168, New York, NY, USA, 2006. ACM.
+
+\bibitem[Caruana et~al.(2008)Caruana, Karampatziakis, and
+  Yessenalina]{Caruana2008-tb}
+Rich Caruana, Nikos Karampatziakis, and Ainur Yessenalina.
+\newblock An empirical evaluation of supervised learning in high dimensions.
+\newblock In \emph{Proceedings of the 25th international conference on Machine
+  learning}, pages 96--103, New York, New York, USA, July 2008. ACM.
+
+\bibitem[Fern{{\'a}}ndez-Delgado et~al.(2014)Fern{{\'a}}ndez-Delgado, Cernadas,
+  Barro, and Amorim]{JMLR:v15:delgado14a}
+Manuel Fern{{\'a}}ndez-Delgado, Eva Cernadas, Sen{{\'e}}n Barro, and Dinani
+  Amorim.
+\newblock Do we need hundreds of classifiers to solve real world classification
+  problems?
+\newblock \emph{Journal of Machine Learning Research}, 15\penalty0
+  (90):\penalty0 3133--3181, 2014.
+
+\bibitem[Chen and Guestrin(2016)]{Chen2016-fx}
+Tianqi Chen and Carlos Guestrin.
+\newblock Xgboost: A scalable tree boosting system.
+\newblock In \emph{Proceedings of the 22nd ACM SIGKDD International Conference
+  on Knowledge Discovery and Data Mining}, KDD '16, pages 785--794, New York,
+  NY, USA, August 2016. Association for Computing Machinery.
+
+\bibitem[Abdulsalam et~al.(2007)Abdulsalam, Skillicorn, and
+  Martin]{abdulsalam07st}
+Hanady Abdulsalam, David~B. Skillicorn, and Patrick Martin.
+\newblock Streaming random forests.
+\newblock In \emph{11th International Database Engineering and Applications
+  Symposium (IDEAS 2007)}, pages 225--232, 2007.
+
+\bibitem[Amit and Geman(1997)]{Amit1997}
+Yali Amit and Donald Geman.
+\newblock Shape quantization and recognition with randomized trees.
+\newblock \emph{Neural Computation}, 9\penalty0 (7):\penalty0 1545--1588, 07
+  1997.
+
+\bibitem[Breiman(2001)]{breiman2001random}
+Leo Breiman.
+\newblock Random forests.
+\newblock \emph{Machine learning}, 45\penalty0 (1):\penalty0 5--32, 2001.
+
+\bibitem[Geisa et~al.(2021)Geisa, Mehta, Helm, Dey, Eaton, Priebe, and
+  Vogelstein]{geisa2021theory}
+Ali Geisa, Ronak Mehta, Hayden~S. Helm, Jayanta Dey, Eric Eaton, Carey~E.
+  Priebe, and Joshua~T. Vogelstein.
+\newblock Towards a theory of out-of-distribution learning.
+\newblock arXiv preprint at \url{https://arxiv.org/abs/2109.14501}, 2021.
+
+\bibitem[Bifet and Gavalda(2009)]{bifet2009adaptive}
+Albert Bifet and Ricard Gavalda.
+\newblock Adaptive learning from evolving data streams.
+\newblock In \emph{International Symposium on Intelligent Data Analysis}, pages
+  249--260. Springer, 2009.
+
+\bibitem[Lakshminarayanan et~al.(2014)Lakshminarayanan, Roy, and Teh]{mondrian}
+Balaji Lakshminarayanan, Daniel~M Roy, and Yee~Whye Teh.
+\newblock Mondrian forests: Efficient online random forests.
+\newblock In Z.~Ghahramani, M.~Welling, C.~Cortes, N.~Lawrence, and K.~Q.
+  Weinberger, editors, \emph{Advances in Neural Information Processing
+  Systems}, volume~27. Curran Associates, Inc., 2014.
+
+\bibitem[Ben-Haim and Tom-Tov(2010)]{JMLR:v11:ben-haim10a}
+Yael Ben-Haim and Elad Tom-Tov.
+\newblock A streaming parallel decision tree algorithm.
+\newblock \emph{Journal of Machine Learning Research}, 11\penalty0
+  (28):\penalty0 849--872, 2010.
+
+\bibitem[Vogelstein et~al.(2021)Vogelstein, Dey, Helm, LeVine, Mehta, Geisa,
+  Xu, van~de Ven, Chang, Gao, Yang, Tower, Larson, White, and
+  Priebe]{vogelstein2021omnidirectional}
+Joshua~T. Vogelstein, Jayanta Dey, Hayden~S. Helm, Will LeVine, Ronak~D. Mehta,
+  Ali Geisa, Haoyin Xu, Gido~M. van~de Ven, Emily Chang, Chenyu Gao, Weiwei
+  Yang, Bryan Tower, Jonathan Larson, Christopher~M. White, and Carey~E.
+  Priebe.
+\newblock Omnidirectional transfer for quasilinear lifelong learning.
+\newblock arXiv preprint at \url{https://arxiv.org/abs/2004.12908}, 2021.
+
+\bibitem[Pedregosa et~al.(2011)Pedregosa, Varoquaux, Gramfort, Michel, Thirion,
+  Grisel, Blondel, Prettenhofer, Weiss, Dubourg, Vanderplas, Passos,
+  Cournapeau, Brucher, Perrot, and Duchesnay]{scikit-learn}
+F.~Pedregosa, G.~Varoquaux, A.~Gramfort, V.~Michel, B.~Thirion, O.~Grisel,
+  M.~Blondel, P.~Prettenhofer, R.~Weiss, V.~Dubourg, J.~Vanderplas, A.~Passos,
+  D.~Cournapeau, M.~Brucher, M.~Perrot, and E.~Duchesnay.
+\newblock Scikit-learn: Machine learning in {P}ython.
+\newblock \emph{Journal of Machine Learning Research}, 12:\penalty0 2825--2830,
+  2011.
+
+\bibitem[Liaw et~al.(2002)Liaw, Wiener, et~al.]{liaw2002classification}
+Andy Liaw, Matthew Wiener, et~al.
+\newblock Classification and regression by randomforest.
+\newblock \emph{R news}, 2\penalty0 (3):\penalty0 18--22, 2002.
+
+\bibitem[Biau et~al.(2008)Biau, Devroye, and Lugosi]{biau2008consistency}
+G{\'e}rard Biau, Luc Devroye, and G{\"a}bor Lugosi.
+\newblock Consistency of random forests and other averaging classifiers.
+\newblock \emph{Journal of Machine Learning Research}, 9\penalty0 (9), 2008.
+
+\bibitem[Khannouz and Glatard(2020)]{OrpailleCC}
+Martin Khannouz and Tristan Glatard.
+\newblock A benchmark of data stream classification for human activity
+  recognition on connected objects.
+\newblock \emph{Sensors}, 20\penalty0 (22), 2020.
+
+\bibitem[Montiel et~al.(2020)Montiel, Halford, Mastelini, Bolmier, Sourty,
+  Vaysse, Zouitine, Gomes, Read, Abdessalem, and Bifet]{river}
+Jacob Montiel, Max Halford, Saulo~Martiello Mastelini, Geoffrey Bolmier,
+  Raphael Sourty, Robin Vaysse, Adil Zouitine, Heitor~Murilo Gomes, Jesse Read,
+  Talel Abdessalem, and Albert Bifet.
+\newblock River: machine learning for streaming data in python, 2020.
+
+\bibitem[Kumar(2017)]{scikit-garden}
+M~Kumar.
+\newblock Scikit-garden/scikit-garden: A garden for scikit-learn compatible
+  trees.
+\newblock \emph{Accessed: Apr}, 13:\penalty0 2018, 2017.
+
+\bibitem[spl(1991)]{splice}
+Molecular biology (splice-junction gene sequences).
+\newblock UCI Machine Learning Repository, 1991.
+
+\bibitem[Alpaydin and Alimoglu(1998)]{pendigits}
+E.~Alpaydin and Fevzi. Alimoglu.
+\newblock Pen-based recognition of handwritten digits.
+\newblock UCI Machine Learning Repository, 1998.
+
+\bibitem[Krizhevsky(2012)]{cifar}
+Alex Krizhevsky.
+\newblock Learning multiple layers of features from tiny images.
+\newblock \emph{University of Toronto}, 05 2012.
+
+\bibitem[Rampone(1998)]{Rampone1998}
+S.~Rampone.
+\newblock Splice-junction recognition on gene sequences (dna) by brain learning
+  algorithm.
+\newblock In \emph{1998 IEEE International Joint Conference on Neural Networks
+  Proceedings. IEEE World Congress on Computational Intelligence (Cat.
+  No.98CH36227)}, volume~1, pages 774--779 vol.1, 1998.
+
+\bibitem[Sarkar et~al.(2020)Sarkar, Chatterjee, Das, and
+  Mondal]{Sarkar2020splice}
+Rahul Sarkar, Chandra~Churh Chatterjee, Sayantan Das, and Dhiman Mondal.
+\newblock Splice junction prediction in dna sequence using multilayered rnn
+  model.
+\newblock In Suresh~Chandra Satapathy, K.~Srujan Raju, K.~Shyamala, D.~Rama
+  Krishna, and Margarita~N. Favorskaya, editors, \emph{Advances in Decision
+  Sciences, Image Processing, Security and Computer Vision}, pages 39--47,
+  Cham, 2020. Springer International Publishing.
+
+\bibitem[Choong and Lee(2017)]{choong2017evaluation}
+Allen Chieng~Hoon Choong and Nung~Kion Lee.
+\newblock Evaluation of convolutionary neural networks modeling of dna
+  sequences using ordinal versus one-hot encoding method.
+\newblock In \emph{2017 International Conference on Computer and Drone
+  Applications (IConDA)}, pages 60--65, 2017.
+
+\bibitem[Alimoglu and Alpaydin(1996)]{Alimoglu96methodsof}
+Fevzi Alimoglu and Ethem Alpaydin.
+\newblock Methods of combining multiple classifiers based on different
+  representations for pen-based handwritten digit recognition.
+\newblock In \emph{Proceedings of the Fifth Turkish Artificial Intelligence and
+  Artificial Neural Networks Symposium (TAINN 96}, 1996.
+
+\bibitem[Roy and Teh(2009)]{roy2009mondrian}
+DM~Roy and YW~Teh.
+\newblock The mondrian process.
+\newblock In \emph{Advances in Neural Information Processing Systems}, 2009.
+
+\end{thebibliography}

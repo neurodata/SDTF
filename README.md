@@ -13,6 +13,38 @@ The package includes two ensemble implementations (Stream Decision Forest and Ca
 
 Based on `scikit-learn` [fork](https://github.com/neurodata/scikit-learn/tree/stream).
 
+## Install
+
+You can manually download the latest version of `SDTF` by cloning the repository:
+
+```
+git clone https://github.com/neurodata/SDTF
+cd SDTF
+python setup.py install
+```
+
+Or install the stable version through `pip`:
+
+```
+pip install sdtf
+```
+
+## Package Requirements
+
+The `SDTF` package requires a `scikit-learn` fork for the `partial_fit` functionality,
+which you can install manually:
+
+```
+git clone https://github.com/neurodata/scikit-learn -b stream --single-branch
+cd scikit-learn
+python setup.py install
+```
+
+The above local setup requires the following packages:
+
+- `cython`
+- `numpy`
+- `scipy`
 
 ## Relevant Repos
 

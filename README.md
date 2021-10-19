@@ -1,5 +1,6 @@
 # Streaming Decision Trees & Forests
 
+[![arXiv](https://img.shields.io/badge/arXiv-2110.08483-red.svg?style=flat)](https://arxiv.org/abs/2110.08483)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5557864.svg)](https://doi.org/10.5281/zenodo.5557864)
 [![PyPI version](https://img.shields.io/pypi/v/sdtf.svg)](https://pypi.org/project/sdtf/)
 [![Python](https://img.shields.io/badge/python-3.8-blue.svg)]()

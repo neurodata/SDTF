@@ -20,10 +20,22 @@ authors:
     family-names: Vogelstein
     given-names: Joshua
     orcid: "https://orcid.org/0000-0003-2487-6237"
-cff-version: "1.1.0"
+identifiers:
+  -
+    type: url
+    value: "https://arxiv.org/pdf/2110.08483.pdf"
+  - type: doi
+    value: 10.5281/zenodo.5557864
+date-released: 2021-10-18
+keywords:
+  - "Streaming Trees"
+  - "Decision Trees"
+  - "Machine Learning"
+cff-version: "1.2.0"
 license: MIT
+doi: 10.5281/zenodo.5557864
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/neurodata/SDTF"
 title: "Streaming Decision Trees & Forests"
-version: "0.0.3"
+version: "0.0.4"
 ...

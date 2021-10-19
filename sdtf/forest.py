@@ -3,6 +3,7 @@ Main Author: Haoyin Xu
 Corresponding Email: haoyinxu@gmail.com
 """
 # import the necessary packages
+import numpy as np
 from scipy import stats
 from numpy.random import permutation
 
@@ -10,6 +11,12 @@ from numpy.random import permutation
 # personal fork and not corresponding to
 # the official scikit-learn repository
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble._forest import (
+    _get_n_samples_bootstrap,
+    _generate_sample_indices,
+    _generate_unsampled_indices,
+)
+from sklearn.utils import check_random_state, compute_sample_weight
 from sklearn.utils.validation import (
     check_X_y,
     check_array,
@@ -17,7 +24,7 @@ from sklearn.utils.validation import (
 from joblib import Parallel, delayed
 
 
-def _partial_fit(tree, X, y, classes=None):
+def _partial_fit(tree, X, y, n_samples_bootstrap, classes=None):
     """
     Internal function to partially fit a tree.
 
@@ -35,10 +42,10 @@ def _partial_fit(tree, X, y, classes=None):
     tree : DecisionTreeClassifier
         The fitted decision tree.
     """
-    p = permutation(X.shape[0])
-    X_r = X[p]
-    y_r = y[p]
-    tree.partial_fit(X_r, y_r, classes=classes)
+    indices = _generate_sample_indices(
+        tree.random_state, X.shape[0], n_samples_bootstrap
+    )
+    tree.partial_fit(X[indices, :], y[indices], classes=classes)
 
     return tree
 
@@ -48,7 +55,7 @@ class StreamDecisionForest:
     A class used to represent a naive ensemble of
     random stream decision trees.
 
-    Attributes
+    Parameters
     ----------
     n_estimators : int, default=100
         An integer that represents the number of stream decision trees.
@@ -68,19 +75,41 @@ class StreamDecisionForest:
         - If "log2", then `max_features=log2(n_features)`.
         - If None, then `max_features=n_features`.
 
+    bootstrap : bool, default=True
+        Whether bootstrap samples are used when building trees. If False, the
+        whole dataset is used to build each tree.
+
     n_jobs : int, default=None
         The number of jobs to run in parallel.
 
+    max_samples : int or float, default=None
+        If bootstrap is True, the number of samples to draw from X
+        to train each base estimator.
+        - If None (default), then draw `X.shape[0]` samples.
+        - If int, then draw `max_samples` samples.
+        - If float, then draw `max_samples * X.shape[0]` samples. Thus,
+          `max_samples` should be in the interval `(0.0, 1.0]`.
+
+    Attributes
+    ----------
     forest_ : list of sklearn.tree.DecisionTreeClassifier
         An internal list that contains random
         sklearn.tree.DecisionTreeClassifier.
     """
 
     def __init__(
-        self, n_estimators=100, splitter="best", max_features="sqrt", n_jobs=None
+        self,
+        n_estimators=100,
+        splitter="best",
+        max_features="sqrt",
+        bootstrap=True,
+        n_jobs=None,
+        max_samples=None,
     ):
         self.forest_ = []
+        self.bootstrap = bootstrap
         self.n_jobs = n_jobs
+        self.max_samples = max_samples
 
         for i in range(n_estimators):
             tree = DecisionTreeClassifier(max_features=max_features, splitter=splitter)
@@ -105,8 +134,15 @@ class StreamDecisionForest:
         X, y = check_X_y(X, y)
 
         # Update stream decision trees with random inputs
+        if self.bootstrap:
+            n_samples_bootstrap = _get_n_samples_bootstrap(X.shape[0], self.max_samples)
+        else:
+            n_samples_bootstrap = X.shape[0]
         trees = Parallel(n_jobs=self.n_jobs)(
-            delayed(_partial_fit)(tree, X, y, classes=classes) for tree in self.forest_
+            delayed(_partial_fit)(
+                tree, X, y, n_samples_bootstrap=n_samples_bootstrap, classes=classes
+            )
+            for tree in self.forest_
         )
         self.forest_ = trees
 
@@ -142,7 +178,7 @@ class CascadeStreamForest:
     A class used to represent a cascading ensemble of
     stream decision trees.
 
-    Attributes
+    Parameters
     ----------
     n_estimators : int, default=100
         An integer that represents the max number of stream decision trees.
@@ -162,22 +198,44 @@ class CascadeStreamForest:
         - If "log2", then `max_features=log2(n_features)`.
         - If None, then `max_features=n_features`.
 
+    bootstrap : bool, default=True
+        Whether bootstrap samples are used when building trees. If False, the
+        whole dataset is used to build each tree.
+
     n_jobs : int, default=None
         The number of jobs to run in parallel.
 
+    max_samples : int or float, default=None
+        If bootstrap is True, the number of samples to draw from X
+        to train each base estimator.
+        - If None (default), then draw `X.shape[0]` samples.
+        - If int, then draw `max_samples` samples.
+        - If float, then draw `max_samples * X.shape[0]` samples. Thus,
+          `max_samples` should be in the interval `(0.0, 1.0]`.
+
+    Attributes
+    ----------
     forest_ : list of sklearn.tree.DecisionTreeClassifier
         An internal list that contains cascading
         sklearn.tree.DecisionTreeClassifier.
     """
 
     def __init__(
-        self, n_estimators=100, splitter="best", max_features="sqrt", n_jobs=None
+        self,
+        n_estimators=100,
+        splitter="best",
+        max_features="sqrt",
+        bootstrap=True,
+        n_jobs=None,
+        max_samples=None,
     ):
         self.forest_ = []
         self.n_estimators = n_estimators
         self.splitter = splitter
-        self.n_jobs = n_jobs
         self.max_features = max_features
+        self.bootstrap = bootstrap
+        self.n_jobs = n_jobs
+        self.max_samples = max_samples
 
     def partial_fit(self, X, y, classes=None):
         """
@@ -197,9 +255,16 @@ class CascadeStreamForest:
         """
         X, y = check_X_y(X, y)
 
+        if self.bootstrap:
+            n_samples_bootstrap = _get_n_samples_bootstrap(X.shape[0], self.max_samples)
+        else:
+            n_samples_bootstrap = X.shape[0]
         # Update existing stream decision trees
         trees = Parallel(n_jobs=self.n_jobs)(
-            delayed(_partial_fit)(tree, X, y, classes=classes) for tree in self.forest_
+            delayed(_partial_fit)(
+                tree, X, y, n_samples_bootstrap=n_samples_bootstrap, classes=classes
+            )
+            for tree in self.forest_
         )
         self.forest_ = trees
 
@@ -209,7 +274,9 @@ class CascadeStreamForest:
             sdt = DecisionTreeClassifier(
                 splitter=self.splitter, max_features=self.max_features
             )
-            _partial_fit(sdt, X, y, classes=classes)
+            _partial_fit(
+                sdt, X, y, n_samples_bootstrap=n_samples_bootstrap, classes=classes
+            )
             self.forest_.append(sdt)
 
         return self

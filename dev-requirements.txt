@@ -2,5 +2,6 @@ numpy
 scipy
 cython
 joblib
+scikit-learn
 black
 twine

@@ -55,7 +55,7 @@ setup(
         "Programming Language :: Python :: 3.9",
     ],
     install_requires=REQUIREMENTS,
-    packages=find_packages,
+    packages=find_packages(),
     cmdclass={
         "verify": VerifyVersionCommand,
     },

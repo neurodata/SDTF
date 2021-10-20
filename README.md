@@ -3,6 +3,7 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2110.08483-red.svg?style=flat)](https://arxiv.org/abs/2110.08483)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5557864.svg)](https://doi.org/10.5281/zenodo.5557864)
 [![PyPI version](https://img.shields.io/pypi/v/sdtf.svg)](https://pypi.org/project/sdtf/)
+[![CircleCI](https://circleci.com/gh/neurodata/SDTF/tree/main.svg?style=shield)](https://circleci.com/gh/neurodata/SDTF/tree/main)
 [![Python](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue.svg)]()
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)

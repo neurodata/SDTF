@@ -30,13 +30,16 @@ jobs:
           command: |
             . venv/bin/activate
             python3 setup.py install
-  deploy:
+  test:
+    parameters:
+      module:
+        type: string
     docker:
       - image: cimg/python:3.9
     steps:
       - checkout
       - restore_cache:
-          key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v1-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -45,9 +48,38 @@ jobs:
             pip install -r dev-requirements.txt
             pip install -e .
       - save_cache:
-          key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v1-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
             - "venv"
+      - run:
+          name: run code linting
+          command: |
+            . venv/bin/activate
+            black --check --diff ./<< parameters.module >>
+  deploy:
+    docker:
+      - image: cimg/python:3.9
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r dev-requirements.txt
+            pip install -e .
+      - save_cache:
+          key: v1-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            python setup.py verify
       - run:
           name: init .pypirc
           command: |
@@ -78,9 +110,14 @@ workflows:
       - build:
           name: "v3.9"
           version: "3.9"
-      - deploy:
+      - test:
+          name: "sdtf"
+          module: "sdtf"
           requires:
             - "v3.9"
+      - deploy:
+          requires:
+            - "sdtf"
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*/

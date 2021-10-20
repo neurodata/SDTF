@@ -1,11 +1,35 @@
+import os
+import sys
 from setuptools import setup, find_packages
+from setuptools.command.install import install
 
-VERSION = "0.0.4"
+# Find mgc version.
+PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
+for line in open(os.path.join(PROJECT_PATH, "sdtf", "__init__.py")):
+    if line.startswith("__version__ = "):
+        VERSION = line.strip().split()[2][1:-1]
 
 REQUIREMENTS = ["numpy", "scikit-learn", "scipy"]
 
 with open("README.md", mode="r", encoding="utf8") as f:
     LONG_DESCRIPTION = f.read()
+
+
+class VerifyVersionCommand(install):
+    """Custom command to verify that the git tag matches our version"""
+
+    description = "verify that the git tag matches our version"
+
+    def run(self):
+        tag = os.getenv("CIRCLE_TAG")
+        version = "v{}".format(VERSION)
+
+        if tag != version:
+            info = "Git tag: {0} does not match the version of this app: {1}".format(
+                tag, version
+            )
+            sys.exit(info)
+
 
 setup(
     name="sdtf",
@@ -25,7 +49,14 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     install_requires=REQUIREMENTS,
-    packages=find_packages(),
+    packages=find_packages,
+    cmdclass={
+        "verify": VerifyVersionCommand,
+    },
 )

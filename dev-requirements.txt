@@ -3,3 +3,4 @@ scipy
 cython
 joblib
 black
+twine

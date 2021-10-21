@@ -9,7 +9,8 @@ for line in open(os.path.join(PROJECT_PATH, "sdtf", "__init__.py")):
     if line.startswith("__version__ = "):
         VERSION = line.strip().split()[2][1:-1]
 
-REQUIREMENTS = ["numpy", "scikit-learn", "scipy"]
+with open("requirements.txt", mode="r", encoding="utf8") as f:
+    REQUIREMENTS = f.read()
 
 with open("README.md", mode="r", encoding="utf8") as f:
     LONG_DESCRIPTION = f.read()

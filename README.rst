@@ -23,6 +23,11 @@ Streaming Decision Trees & Forests
   :alt: CircleCI
 
 
+.. image:: https://img.shields.io/netlify/b47deb03-9e70-4684-a0a1-bbafdbcf6d49
+  :target: https://app.netlify.com/sites/sdtf/deploys
+  :alt: Netlify
+
+
 .. image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue.svg
   :target:
   :alt: Python

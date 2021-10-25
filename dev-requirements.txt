@@ -1,6 +1,5 @@
-numpy
-scipy
+wheel
+-r requirements.txt
 cython
-joblib
-black
+black[jupyter]
 twine

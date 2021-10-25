@@ -26,7 +26,7 @@ identifiers:
     value: "https://arxiv.org/pdf/2110.08483.pdf"
   - type: doi
     value: 10.5281/zenodo.5557864
-date-released: 2021-10-18
+date-released: 2021-10-25
 keywords:
   - "Streaming Trees"
   - "Decision Trees"
@@ -37,5 +37,5 @@ doi: 10.5281/zenodo.5557864
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/neurodata/SDTF"
 title: "Streaming Decision Trees & Forests"
-version: "0.0.8"
+version: "0.0.9"
 ...

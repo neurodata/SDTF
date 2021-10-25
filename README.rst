@@ -92,6 +92,10 @@ The above local setup requires the following packages:
 * ``numpy``
 * ``scipy``
 
+
+.. doc-end
+
+
 Relevant Repos
 --------------
 

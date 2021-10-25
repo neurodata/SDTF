@@ -24,24 +24,8 @@ from sklearn.utils.validation import (
 from joblib import Parallel, delayed
 
 
-def _partial_fit(tree, X, y, n_samples_bootstrap, classes=None):
-    """
-    Internal function to partially fit a tree.
-
-    Parameters
-    ----------
-    tree : DecisionTreeClassifier
-        Tree to be partially fitted.
-    X : ndarray
-        Input data matrix.
-    y : ndarray
-        Output (i.e. response data matrix).
-
-    Returns
-    -------
-    tree : DecisionTreeClassifier
-        The fitted decision tree.
-    """
+def _partial_fit(tree, X, y, n_samples_bootstrap, classes):
+    """Internal function to partially fit a tree."""
     indices = _generate_sample_indices(
         tree.random_state, X.shape[0], n_samples_bootstrap
     )
@@ -123,8 +107,14 @@ class StreamDecisionForest:
         ----------
         X : ndarray
             Input data matrix.
+
         y : ndarray
             Output (i.e. response data matrix).
+
+        classes : ndarray, default=None
+            List of all the classes that can possibly appear in the y vector.
+            Must be provided at the first call to partial_fit, can be omitted
+            in subsequent calls.
 
         Returns
         -------
@@ -245,8 +235,14 @@ class CascadeStreamForest:
         ----------
         X : ndarray
             Input data matrix.
+
         y : ndarray
             Output (i.e. response data matrix).
+
+        classes : ndarray, default=None
+            List of all the classes that can possibly appear in the y vector.
+            Must be provided at the first call to partial_fit, can be omitted
+            in subsequent calls.
 
         Returns
         -------

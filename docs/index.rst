@@ -8,9 +8,12 @@ Overview
 
 .. include:: ../README.rst
   :start-after: doc-start
+  :end-before: doc-end
+
+Benchmarks
+==========
 
 .. toctree::
-  :hidden:
   :maxdepth: 1
 
   visual

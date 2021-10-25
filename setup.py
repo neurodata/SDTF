@@ -12,7 +12,7 @@ for line in open(os.path.join(PROJECT_PATH, "sdtf", "__init__.py")):
 with open("requirements.txt", mode="r", encoding="utf8") as f:
     REQUIREMENTS = f.read()
 
-with open("README.md", mode="r", encoding="utf8") as f:
+with open("README.rst", mode="r", encoding="utf8") as f:
     LONG_DESCRIPTION = f.read()
 
 

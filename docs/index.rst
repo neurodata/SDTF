@@ -17,3 +17,11 @@ Benchmarks
   :maxdepth: 1
 
   visual
+
+API
+===
+
+.. toctree::
+  :maxdepth: 1
+
+  api

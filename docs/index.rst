@@ -12,4 +12,4 @@ Overview
 .. toctree::
    :maxdepth: 1
 
-   README
+   ../benchmarks/visual

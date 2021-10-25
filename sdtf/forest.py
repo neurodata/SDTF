@@ -128,6 +128,8 @@ class StreamDecisionForest:
             n_samples_bootstrap = _get_n_samples_bootstrap(X.shape[0], self.max_samples)
         else:
             n_samples_bootstrap = X.shape[0]
+
+        # Update existing stream decision trees
         trees = Parallel(n_jobs=self.n_jobs)(
             delayed(_partial_fit)(
                 tree, X, y, n_samples_bootstrap=n_samples_bootstrap, classes=classes
@@ -255,6 +257,7 @@ class CascadeStreamForest:
             n_samples_bootstrap = _get_n_samples_bootstrap(X.shape[0], self.max_samples)
         else:
             n_samples_bootstrap = X.shape[0]
+
         # Update existing stream decision trees
         trees = Parallel(n_jobs=self.n_jobs)(
             delayed(_partial_fit)(

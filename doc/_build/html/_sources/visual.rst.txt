@@ -1,4 +1,0 @@
-API Reference
-=============
-
-.. notebook:: ../benchmarks/visual.ipynb

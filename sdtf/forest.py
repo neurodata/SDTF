@@ -5,7 +5,6 @@ Corresponding Email: haoyinxu@gmail.com
 # import the necessary packages
 import numpy as np
 from scipy import stats
-from numpy.random import permutation
 
 # NOTE: the sklearn dependence is based on
 # personal fork and not corresponding to

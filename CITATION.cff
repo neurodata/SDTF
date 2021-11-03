@@ -34,8 +34,8 @@ keywords:
 cff-version: "1.2.0"
 license: MIT
 doi: 10.5281/zenodo.5557864
-message: "If you use this software, please cite it using these metadata."
+message: "If you use SDTF, please cite it using these metadata."
 repository-code: "https://github.com/neurodata/SDTF"
 title: "Streaming Decision Trees & Forests"
-version: "0.0.9"
+version: "0.1.0"
 ...

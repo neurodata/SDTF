@@ -20,7 +20,7 @@ def experiment_ht():
     train_time_l = []
     test_time_l = []
 
-    ht = tree.HoeffdingTreeClassifier()
+    ht = tree.HoeffdingTreeClassifier(grace_period=2)
 
     for i in range(7400):
         X_t = X_r.iloc[i]

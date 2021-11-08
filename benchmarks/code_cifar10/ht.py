@@ -21,7 +21,7 @@ def experiment_ht():
     train_time_l = []
     test_time_l = []
 
-    ht = tree.HoeffdingTreeClassifier(max_size=1000)
+    ht = tree.HoeffdingTreeClassifier(max_size=1000, grace_period=2)
 
     for i in range(X_train.shape[0]):
         X_t = X_r[i]

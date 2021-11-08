@@ -94,6 +94,27 @@ The above local setup requires the following packages:
 * ``numpy``
 * ``scipy``
 
+Relevant Repos
+--------------
+
+
+* `online-ml/river <https://github.com/online-ml/river>`_
+* `scikit-garden/scikit-garden <https://github.com/scikit-garden/scikit-garden>`_
+* `huawei-noah/streamDM <https://github.com/huawei-noah/streamDM>`_
+* `soundcloud/spdt <https://github.com/soundcloud/spdt>`_
+
+Relevant Papers
+---------------
+
+
+* `Very Fast Decision Tree <https://dl.acm.org/doi/10.1145/347090.347107>`_
+* `Mondrian Forests <https://papers.nips.cc/paper/5234-mondrian-forests-efficient-online-random-forests.pdf>`_
+* `Online Bagging and Boosting <https://ieeexplore.ieee.org/document/1571498>`_
+* `Leveraging Bagging for Evolving Data Streams <https://link.springer.com/chapter/10.1007/978-3-642-15880-3_15>`_
+* `Ensemble Learning for Data Stream Classification <https://dl.acm.org/doi/10.1145/3054925>`_
+* `Adaptive Random Forests <https://link.springer.com/article/10.1007/s10994-017-5642-8>`_
+* `Streaming Random Forests <https://ieeexplore.ieee.org/document/4318108>`_
+* `Streaming Parallel Decision Tree <https://www.jmlr.org/papers/v11/ben-haim10a.html>`_
 
 Benchmarks
 ==========

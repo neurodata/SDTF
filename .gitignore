@@ -146,3 +146,4 @@ benchmarks/*
 !benchmarks/csf/
 !benchmarks/dt/
 !benchmarks/rf/
+!benchmarks/requirements.txt

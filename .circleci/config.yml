@@ -13,23 +13,23 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
-            python3 -m venv venv
+            python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
             pip install -r dev-requirements.txt
       - save_cache:
-          key: v1-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
             - "venv"
       - run:
           name: test if package installs
           command: |
             . venv/bin/activate
-            python3 setup.py install
+            python setup.py install
   test:
     parameters:
       module:
@@ -39,16 +39,16 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
-            python3 -m venv venv
+            python -m venv venv
             . venv/bin/activate
             pip install -r dev-requirements.txt
             pip install -e .
       - save_cache:
-          key: v1-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
             - "venv"
       - run:
@@ -62,22 +62,22 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
-            python3 -m venv venv
+            python -m venv venv
             . venv/bin/activate
             pip install -r dev-requirements.txt
             pip install -e .
       - save_cache:
-          key: v1-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-3.9-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
             - "venv"
       - run:
           name: verify git tag vs. version
           command: |
-            python3 -m venv venv
+            python -m venv venv
             . venv/bin/activate
             python setup.py verify
       - run:

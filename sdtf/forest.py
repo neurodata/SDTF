@@ -5,7 +5,6 @@ Corresponding Email: haoyinxu@gmail.com
 # import the necessary packages
 import numpy as np
 from scipy import stats
-from numpy.random import permutation
 
 # NOTE: the sklearn dependence is based on
 # personal fork and not corresponding to
@@ -17,10 +16,7 @@ from sklearn.ensemble._forest import (
     _generate_unsampled_indices,
 )
 from sklearn.utils import check_random_state, compute_sample_weight
-from sklearn.utils.validation import (
-    check_X_y,
-    check_array,
-)
+from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from joblib import Parallel, delayed
 
 
@@ -155,6 +151,7 @@ class StreamDecisionForest:
             The majority predictions.
         """
         X = check_array(X)
+        check_is_fitted(self)
 
         results = Parallel(n_jobs=self.n_jobs)(
             delayed(tree.predict)(X) for tree in self.forest_
@@ -295,6 +292,7 @@ class CascadeStreamForest:
             The majority predictions.
         """
         X = check_array(X)
+        check_is_fitted(self)
 
         results = Parallel(n_jobs=self.n_jobs)(
             delayed(tree.predict)(X) for tree in self.forest_

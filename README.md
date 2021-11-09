@@ -5,7 +5,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/sdtf.svg)](https://pypi.org/project/sdtf/)
 [![CircleCI](https://circleci.com/gh/neurodata/SDTF/tree/main.svg?style=shield)](https://circleci.com/gh/neurodata/SDTF/tree/main)
 [![Netlify](https://img.shields.io/netlify/b47deb03-9e70-4684-a0a1-bbafdbcf6d49)](https://app.netlify.com/sites/sdtf/deploys)
-[![Python](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue.svg)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/pypi/pyversions/sdtf)](https://www.python.org/downloads/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)
 [![Downloads](https://img.shields.io/pypi/dm/sdtf.svg)](https://pypi.org/project/sdtf/#files)

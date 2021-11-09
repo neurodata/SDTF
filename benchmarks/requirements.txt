@@ -1,3 +1,4 @@
 sdtf
 scikit-garden
 river
+torchvision

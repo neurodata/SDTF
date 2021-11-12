@@ -34,6 +34,10 @@ jobs:
     parameters:
       module:
         type: string
+      benchmarks:
+        type: string
+      docs:
+        type: string
     docker:
       - image: cimg/python:3.9
     steps:
@@ -56,6 +60,8 @@ jobs:
           command: |
             . venv/bin/activate
             black --check --diff ./<< parameters.module >>
+            black --check --diff ./<< parameters.benchmarks >>
+            black --check --diff ./<< parameters.docs >>
   deploy:
     docker:
       - image: cimg/python:3.9
@@ -113,6 +119,8 @@ workflows:
       - test:
           name: "sdtf"
           module: "sdtf"
+          benchmarks: "benchmarks"
+          docs: "docs"
           requires:
             - "v3.9"
       - deploy:

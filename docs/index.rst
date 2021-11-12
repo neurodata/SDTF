@@ -123,6 +123,7 @@ Benchmarks
   :maxdepth: 1
 
   visual
+  xor_experiments
 
 API
 ===

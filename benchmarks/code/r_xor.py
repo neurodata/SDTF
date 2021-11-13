@@ -1,3 +1,6 @@
+"""
+Author: Nick Hahn
+"""
 import argparse
 import xor_functions as fn
 import numpy as np
@@ -21,7 +24,6 @@ parser.add_argument(
 parser.add_argument(
     "-sdf", help="stream decision forests", required=False, action="store_true"
 )
-# args = parser.parse_args()
 args, unknown = parser.parse_known_args()
 
 # Perform experimentss

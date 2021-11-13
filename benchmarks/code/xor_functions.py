@@ -1,5 +1,6 @@
 """
-Author: Nick Hahn
+Coauthors: Nick Hahn
+           Will LeVine
 """
 import numpy as np
 from sklearn.datasets import make_blobs
@@ -170,7 +171,6 @@ def r_xor_plot_error(mean_error):
         lw=3,
     )
     ax1.set_ylabel("Generalization Error (XOR)", fontsize=fontsize)
-    # ax1.legend(loc="upper left", fontsize=20, frameon=False)
     ax1.set_xlabel("Total Sample Size", fontsize=fontsize)
     ax1.tick_params(labelsize=labelsize)
     ax1.set_yscale("log")
@@ -179,7 +179,6 @@ def r_xor_plot_error(mean_error):
     ax1.set_xticks([750, 1500, 2250])
     ax1.axvline(x=750, c="gray", linewidth=1.5, linestyle="dashed")
     ax1.axvline(x=1500, c="gray", linewidth=1.5, linestyle="dashed")
-    # ax1.set_title("XOR", fontsize=30)
 
     right_side = ax1.spines["right"]
     right_side.set_visible(False)
@@ -248,8 +247,6 @@ def r_xor_plot_error(mean_error):
     ax1.text(850, np.mean(ax1.get_ylim()) + 0.5, "RXOR", fontsize=26)
     ax1.text(1700, np.mean(ax1.get_ylim()) + 0.5, "XOR", fontsize=26)
 
-    # ax1.set_title("RXOR", fontsize=30)
-
 
 def xnor_plot_error(mean_error):
     """Plot Generalization Errors"""
@@ -303,7 +300,6 @@ def xnor_plot_error(mean_error):
         lw=3,
     )
     ax1.set_ylabel("Generalization Error (XOR)", fontsize=fontsize)
-    # ax1.legend(loc="upper left", fontsize=20, frameon=False)
     ax1.set_xlabel("Total Sample Size", fontsize=fontsize)
     ax1.tick_params(labelsize=labelsize)
     ax1.set_yscale("log")
@@ -312,7 +308,6 @@ def xnor_plot_error(mean_error):
     ax1.set_xticks([750, 1500, 2250])
     ax1.axvline(x=750, c="gray", linewidth=1.5, linestyle="dashed")
     ax1.axvline(x=1500, c="gray", linewidth=1.5, linestyle="dashed")
-    # ax1.set_title("XOR", fontsize=30)
 
     right_side = ax1.spines["right"]
     right_side.set_visible(False)
@@ -381,8 +376,6 @@ def xnor_plot_error(mean_error):
     ax1.text(850, np.mean(ax1.get_ylim()) + 0.5, "XNOR", fontsize=26)
     ax1.text(1700, np.mean(ax1.get_ylim()) + 0.5, "XOR", fontsize=26)
 
-    # ax1.set_title("XNOR", fontsize=30)
-
 
 def plot_xor_rxor_xor(num_data_points):
     """Visualize Gaussian XOR and Gaussian R-XOR Data"""
@@ -404,7 +397,6 @@ def plot_xor_rxor_xor(num_data_points):
     ax[0].set_yticks([])
     ax[1].set_yticks([])
     ax[2].set_yticks([])
-    # plt.tight_layout()
 
     plt.show()
 
@@ -429,7 +421,6 @@ def plot_xor_xnor_xor(num_data_points):
     ax[0].set_yticks([])
     ax[1].set_yticks([])
     ax[2].set_yticks([])
-    # plt.tight_layout()
 
     plt.show()
 

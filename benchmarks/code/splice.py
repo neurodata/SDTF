@@ -4,8 +4,8 @@ Author: Haoyin Xu
 import time
 import argparse
 import numpy as np
-import pandas as pd
 from numpy.random import permutation
+import openml
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -254,9 +254,10 @@ def experiment_csf():
 
 
 # Prepare splice DNA data
-df = pd.read_csv("../splice.csv")
-X = df.drop(["Label"], axis=1).values
-y = df["Label"].values
+dataset = openml.datasets.get_dataset(46)
+X, y, is_categorical, _ = dataset.get_data(
+    dataset_format="array", target=dataset.default_target_attribute
+)
 X_train, X_test, y_train, y_test = train_test_split(X, y)
 
 # Parse classifier choices

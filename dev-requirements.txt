@@ -1,5 +1,8 @@
 wheel
 -r requirements.txt
 cython
+river
+scikit-garden
+openml
 black[jupyter]
 twine

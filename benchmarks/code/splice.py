@@ -4,7 +4,6 @@ Author: Haoyin Xu
 import time
 import argparse
 import numpy as np
-import pandas as pd
 from numpy.random import permutation
 import openml
 from sklearn.model_selection import train_test_split

@@ -140,4 +140,7 @@ benchmarks/*
 !benchmarks/results/
 !benchmarks/requirements.txt
 !benchmarks/README.md
-!benchmarks/splice.csv
+
+# Azure files
+.amlignore
+.amlignore.amltmp

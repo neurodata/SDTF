@@ -72,7 +72,7 @@ def experiment_sdf(X_train, X_test, y_train, y_test):
         test_time_l.append(end_time - start_time)
 
     # Reformat the train times
-    for i in range(1, batch_counts):
+    for i in range(1, int(batch_counts)):
         train_time_l[i] += train_time_l[i - 1]
 
     return sdf_l, train_time_l, test_time_l

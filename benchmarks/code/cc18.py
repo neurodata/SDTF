@@ -104,6 +104,7 @@ for data_id in openml.study.get_suite("OpenML-CC18").data:
     X, y, is_categorical, _ = dataset.get_data(
         dataset_format="array", target=dataset.default_target_attribute
     )
+    X = np.nan_to_num(X)
 
     rf_acc_dict[data_id] = []
     rf_train_t_dict[data_id] = []

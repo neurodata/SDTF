@@ -33,7 +33,7 @@ def experiment_rf(X_train, X_test, y_train, y_test):
 
     rf = RandomForestClassifier(n_jobs=-1)
     batch_counts = len(y_train) / BATCH_SIZE
-    for i in range(batch_counts):
+    for i in range(int(batch_counts)):
         X_t = X_train[: (i + 1) * BATCH_SIZE]
         y_t = y_train[: (i + 1) * BATCH_SIZE]
 
@@ -61,7 +61,7 @@ def experiment_sdf(X_train, X_test, y_train, y_test):
     sdf = StreamDecisionForest(n_jobs=-1)
     batch_counts = len(y_train) / BATCH_SIZE
     classes = np.unique(y_train)
-    for i in range(batch_counts):
+    for i in range(int(batch_counts)):
         X_t = X_train[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]
         y_t = y_train[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]
 

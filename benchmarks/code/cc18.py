@@ -4,6 +4,7 @@ Author: Haoyin Xu
 import time
 import argparse
 import numpy as np
+from numpy.random import permutation
 import json
 import openml
 from sklearn.model_selection import StratifiedKFold
@@ -123,6 +124,11 @@ for data_id in openml.study.get_suite("OpenML-CC18").data:
             y[train_index],
             y[test_index],
         )
+
+        # Shuffle the training sets
+        p = permutation(len(X_train))
+        X_train = X_train[p]
+        y_train = y_train[p]
 
         if args.all or args.rf:
             rf_acc, rf_train_t, rf_test_t = experiment_rf(

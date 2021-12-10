@@ -1,5 +1,6 @@
 """
-Author: Nick Hahn
+Coauthors: Nick Hahn
+           Haoyin Xu
 """
 import argparse
 import xor_functions as fn
@@ -24,12 +25,15 @@ parser.add_argument(
 parser.add_argument(
     "-sdf", help="stream decision forests", required=False, action="store_true"
 )
+parser.add_argument(
+    "-odif", help="omnidirectional forests", required=False, action="store_true"
+)
 args, unknown = parser.parse_known_args()
 
 # Perform experimentss
 mc_rep = 50
 n_test = 1000
-classifiers = np.zeros(4)
+classifiers = np.zeros(5)
 if args.all or args.ht:
     classifiers[0] = 1
 if args.all or args.mf:
@@ -38,6 +42,8 @@ if args.all or args.sdt:
     classifiers[2] = 1
 if args.all or args.sdf:
     classifiers[3] = 1
+if args.all or args.odif:
+    classifiers[4] = 1
 
 means = fn.run("XNOR", classifiers, mc_rep, n_test)
 
@@ -51,3 +57,5 @@ write_result("../results/sdt/xnor_exp_xor_error.txt", means[4])
 write_result("../results/sdt/xnor_exp_xnor_error.txt", means[5])
 write_result("../results/sdf/xnor_exp_xor_error.txt", means[6])
 write_result("../results/sdf/xnor_exp_xnor_error.txt", means[7])
+write_result("../results/odif/xnor_exp_xor_error.txt", means[8])
+write_result("../results/odif/xnor_exp_xnor_error.txt", means[9])

@@ -50,13 +50,18 @@ means = fn.run("R-XOR", classifiers, mc_rep, n_test)
 
 
 # Write mean errors to appropriate txt files
-write_result("../results/ht/rxor_exp_xor_error.txt", means[0])
-write_result("../results/ht/rxor_exp_r_xor_error.txt", means[1])
-write_result("../results/mf/rxor_exp_xor_error.txt", means[2])
-write_result("../results/mf/rxor_exp_r_xor_error.txt", means[3])
-write_result("../results/sdt/rxor_exp_xor_error.txt", means[4])
-write_result("../results/sdt/rxor_exp_r_xor_error.txt", means[5])
-write_result("../results/sdf/rxor_exp_xor_error.txt", means[6])
-write_result("../results/sdf/rxor_exp_r_xor_error.txt", means[7])
-write_result("../results/odif/rxor_exp_xor_error.txt", means[8])
-write_result("../results/odif/rxor_exp_r_xor_error.txt", means[9])
+if args.all or args.ht:
+    write_result("../results/ht/rxor_exp_xor_error.txt", means[0])
+    write_result("../results/ht/rxor_exp_r_xor_error.txt", means[1])
+if args.all or args.mf:
+    write_result("../results/mf/rxor_exp_xor_error.txt", means[2])
+    write_result("../results/mf/rxor_exp_r_xor_error.txt", means[3])
+if args.all or args.sdt:
+    write_result("../results/sdt/rxor_exp_xor_error.txt", means[4])
+    write_result("../results/sdt/rxor_exp_r_xor_error.txt", means[5])
+if args.all or args.sdf:
+    write_result("../results/sdf/rxor_exp_xor_error.txt", means[6])
+    write_result("../results/sdf/rxor_exp_r_xor_error.txt", means[7])
+if args.all or args.odif:
+    write_result("../results/odif/rxor_exp_xor_error.txt", means[8])
+    write_result("../results/odif/rxor_exp_r_xor_error.txt", means[9])

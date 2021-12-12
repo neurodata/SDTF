@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 from sdtf import StreamDecisionForest
 from sklearn.tree import DecisionTreeClassifier
+from proglearn.forest import LifelongClassificationForest
 from river import tree
 import ast
 
@@ -32,7 +33,7 @@ def run(exp_type, classifiers, mc_rep, n_test):
         angle = np.pi / 2
     else:  # R-XOR
         angle = np.pi / 4
-    mean_error = np.zeros((8, 90))
+    mean_error = np.zeros((10, 90))
     for i in range(mc_rep):
         errors = experiment(angle, classifiers, n_xor, n_rxor, n_test)
         mean_error += errors
@@ -78,8 +79,10 @@ def experiment(angle, classifiers, n_xor, n_rxor, n_test):
         sdt = DecisionTreeClassifier()
     if classifiers[3] == 1:
         sdf = StreamDecisionForest()
+    if classifiers[4] == 1:
+        odif = LifelongClassificationForest(default_n_estimators=10)
 
-    errors = np.zeros((8, int(X_stream.shape[0] / 25)))
+    errors = np.zeros((10, int(X_stream.shape[0] / 25)))
 
     for i in range(int(X_stream.shape[0] / 25)):
         X = X_stream[i * 25 : (i + 1) * 25]
@@ -116,6 +119,32 @@ def experiment(angle, classifiers, n_xor, n_rxor, n_test):
             errors[6, i] = 1 - np.mean(sdf_xor_y_hat == test_y_xor)
             errors[7, i] = 1 - np.mean(sdf_rxor_y_hat == test_y_rxor)
 
+        # Omnidirectional Forest Classifier
+        if classifiers[4] == 1:
+            if i == 0:
+                odif.add_task(X, y, n_estimators=10, task_id=0)
+                odif_xor_y_hat = odif.predict(test_x_xor, task_id=0)
+                odif_rxor_y_hat = odif.predict(test_x_rxor, task_id=0)
+            elif i < (n_xor / 25):
+                odif.update_task(X, y, task_id=0)
+                odif_xor_y_hat = odif.predict(test_x_xor, task_id=0)
+                odif_rxor_y_hat = odif.predict(test_x_rxor, task_id=0)
+            elif i == (n_xor / 25):
+                odif.add_task(X, y, n_estimators=10, task_id=1)
+                odif_xor_y_hat = odif.predict(test_x_xor, task_id=1)
+                odif_rxor_y_hat = odif.predict(test_x_rxor, task_id=1)
+            elif i < (n_xor + n_rxor) / 25:
+                odif.update_task(X, y, task_id=1)
+                odif_xor_y_hat = odif.predict(test_x_xor, task_id=1)
+                odif_rxor_y_hat = odif.predict(test_x_rxor, task_id=1)
+            elif i < (2 * n_xor + n_rxor) / 25:
+                odif.update_task(X, y, task_id=0)
+                odif_xor_y_hat = odif.predict(test_x_xor, task_id=0)
+                odif_rxor_y_hat = odif.predict(test_x_rxor, task_id=0)
+
+            errors[6, i] = 1 - np.mean(odif_xor_y_hat == test_y_xor)
+            errors[7, i] = 1 - np.mean(odif_rxor_y_hat == test_y_rxor)
+
     return errors
 
 
@@ -126,6 +155,7 @@ def r_xor_plot_error(mean_error):
         "Mondrian Forest",
         "Stream Decision Tree",
         "Stream Decision Forest",
+        "Omnidirectional Forest",
     ]
     fontsize = 30
     labelsize = 28
@@ -167,6 +197,15 @@ def r_xor_plot_error(mean_error):
         mean_error[6],
         label=algorithms[3],
         c=colors[3],
+        ls=ls[np.sum(1 > 1).astype(int)],
+        lw=3,
+    )
+    # Omnidirectional Forest XOR
+    ax1.plot(
+        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
+        mean_error[8],
+        label=algorithms[4],
+        c=colors[9],
         ls=ls[np.sum(1 > 1).astype(int)],
         lw=3,
     )
@@ -227,6 +266,15 @@ def r_xor_plot_error(mean_error):
         ls=ls[np.sum(1 > 1).astype(int)],
         lw=3,
     )
+    # Omnidirectional Forest R-XOR
+    ax1.plot(
+        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
+        mean_error[9],
+        label=algorithms[4],
+        c=colors[9],
+        ls=ls[np.sum(1 > 1).astype(int)],
+        lw=3,
+    )
 
     ax1.set_ylabel("Generalization Error (%s)" % "RXOR", fontsize=fontsize)
     ax1.legend(bbox_to_anchor=(1.05, 1.0), loc="upper left", fontsize=20, frameon=False)
@@ -255,6 +303,7 @@ def xnor_plot_error(mean_error):
         "Mondrian Forest",
         "Stream Decision Tree",
         "Stream Decision Forest",
+        "Omnidirectional Forest",
     ]
     fontsize = 30
     labelsize = 28
@@ -296,6 +345,15 @@ def xnor_plot_error(mean_error):
         mean_error[6],
         label=algorithms[3],
         c=colors[3],
+        ls=ls[np.sum(1 > 1).astype(int)],
+        lw=3,
+    )
+    # Omnidirectional Forest XOR
+    ax1.plot(
+        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
+        mean_error[8],
+        label=algorithms[4],
+        c=colors[9],
         ls=ls[np.sum(1 > 1).astype(int)],
         lw=3,
     )
@@ -353,6 +411,15 @@ def xnor_plot_error(mean_error):
         mean_error[7],
         label=algorithms[3],
         c=colors[3],
+        ls=ls[np.sum(1 > 1).astype(int)],
+        lw=3,
+    )
+    # Omnidirectional Forest XNOR
+    ax1.plot(
+        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
+        mean_error[9],
+        label=algorithms[4],
+        c=colors[9],
         ls=ls[np.sum(1 > 1).astype(int)],
         lw=3,
     )

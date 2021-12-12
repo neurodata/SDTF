@@ -142,8 +142,8 @@ def experiment(angle, classifiers, n_xor, n_rxor, n_test):
                 odif_xor_y_hat = odif.predict(test_x_xor, task_id=0)
                 odif_rxor_y_hat = odif.predict(test_x_rxor, task_id=0)
 
-            errors[6, i] = 1 - np.mean(odif_xor_y_hat == test_y_xor)
-            errors[7, i] = 1 - np.mean(odif_rxor_y_hat == test_y_rxor)
+            errors[8, i] = 1 - np.mean(odif_xor_y_hat == test_y_xor)
+            errors[9, i] = 1 - np.mean(odif_rxor_y_hat == test_y_rxor)
 
     return errors
 

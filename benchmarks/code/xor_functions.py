@@ -80,7 +80,7 @@ def experiment(angle, classifiers, n_xor, n_rxor, n_test):
     if classifiers[3] == 1:
         sdf = StreamDecisionForest()
     if classifiers[4] == 1:
-        odif = LifelongClassificationForest(default_n_estimators=10)
+        synf = LifelongClassificationForest(default_n_estimators=10)
 
     errors = np.zeros((10, int(X_stream.shape[0] / 25)))
 
@@ -119,31 +119,31 @@ def experiment(angle, classifiers, n_xor, n_rxor, n_test):
             errors[6, i] = 1 - np.mean(sdf_xor_y_hat == test_y_xor)
             errors[7, i] = 1 - np.mean(sdf_rxor_y_hat == test_y_rxor)
 
-        # Omnidirectional Forest Classifier
+        # Synergistic Forest Classifier
         if classifiers[4] == 1:
             if i == 0:
-                odif.add_task(X, y, n_estimators=10, task_id=0)
-                odif_xor_y_hat = odif.predict(test_x_xor, task_id=0)
-                odif_rxor_y_hat = odif.predict(test_x_rxor, task_id=0)
+                synf.add_task(X, y, n_estimators=10, task_id=0)
+                synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
+                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=0)
             elif i < (n_xor / 25):
-                odif.update_task(X, y, task_id=0)
-                odif_xor_y_hat = odif.predict(test_x_xor, task_id=0)
-                odif_rxor_y_hat = odif.predict(test_x_rxor, task_id=0)
+                synf.update_task(X, y, task_id=0)
+                synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
+                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=0)
             elif i == (n_xor / 25):
-                odif.add_task(X, y, n_estimators=10, task_id=1)
-                odif_xor_y_hat = odif.predict(test_x_xor, task_id=1)
-                odif_rxor_y_hat = odif.predict(test_x_rxor, task_id=1)
+                synf.add_task(X, y, n_estimators=10, task_id=1)
+                synf_xor_y_hat = synf.predict(test_x_xor, task_id=1)
+                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=1)
             elif i < (n_xor + n_rxor) / 25:
-                odif.update_task(X, y, task_id=1)
-                odif_xor_y_hat = odif.predict(test_x_xor, task_id=1)
-                odif_rxor_y_hat = odif.predict(test_x_rxor, task_id=1)
+                synf.update_task(X, y, task_id=1)
+                synf_xor_y_hat = synf.predict(test_x_xor, task_id=1)
+                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=1)
             elif i < (2 * n_xor + n_rxor) / 25:
-                odif.update_task(X, y, task_id=0)
-                odif_xor_y_hat = odif.predict(test_x_xor, task_id=0)
-                odif_rxor_y_hat = odif.predict(test_x_rxor, task_id=0)
+                synf.update_task(X, y, task_id=0)
+                synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
+                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=0)
 
-            errors[8, i] = 1 - np.mean(odif_xor_y_hat == test_y_xor)
-            errors[9, i] = 1 - np.mean(odif_rxor_y_hat == test_y_rxor)
+            errors[8, i] = 1 - np.mean(synf_xor_y_hat == test_y_xor)
+            errors[9, i] = 1 - np.mean(synf_rxor_y_hat == test_y_rxor)
 
     return errors
 
@@ -155,7 +155,7 @@ def r_xor_plot_error(mean_error):
         "Mondrian Forest",
         "Stream Decision Tree",
         "Stream Decision Forest",
-        "Omnidirectional Forest",
+        "Synergistic Forest",
     ]
     fontsize = 30
     labelsize = 28
@@ -200,7 +200,7 @@ def r_xor_plot_error(mean_error):
         ls=ls[np.sum(1 > 1).astype(int)],
         lw=3,
     )
-    # Omnidirectional Forest XOR
+    # Synergistic Forest XOR
     ax1.plot(
         (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
         mean_error[8],
@@ -266,7 +266,7 @@ def r_xor_plot_error(mean_error):
         ls=ls[np.sum(1 > 1).astype(int)],
         lw=3,
     )
-    # Omnidirectional Forest R-XOR
+    # Synergistic Forest R-XOR
     ax1.plot(
         (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
         mean_error[9],
@@ -303,7 +303,7 @@ def xnor_plot_error(mean_error):
         "Mondrian Forest",
         "Stream Decision Tree",
         "Stream Decision Forest",
-        "Omnidirectional Forest",
+        "Synergistic Forest",
     ]
     fontsize = 30
     labelsize = 28
@@ -348,7 +348,7 @@ def xnor_plot_error(mean_error):
         ls=ls[np.sum(1 > 1).astype(int)],
         lw=3,
     )
-    # Omnidirectional Forest XOR
+    # Synergistic Forest XOR
     ax1.plot(
         (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
         mean_error[8],
@@ -414,7 +414,7 @@ def xnor_plot_error(mean_error):
         ls=ls[np.sum(1 > 1).astype(int)],
         lw=3,
     )
-    # Omnidirectional Forest XNOR
+    # Synergistic Forest XNOR
     ax1.plot(
         (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
         mean_error[9],

@@ -26,7 +26,7 @@ parser.add_argument(
     "-sdf", help="stream decision forests", required=False, action="store_true"
 )
 parser.add_argument(
-    "-odif", help="omnidirectional forests", required=False, action="store_true"
+    "-synf", help="synergistic forests", required=False, action="store_true"
 )
 args, unknown = parser.parse_known_args()
 
@@ -42,7 +42,7 @@ if args.all or args.sdt:
     classifiers[2] = 1
 if args.all or args.sdf:
     classifiers[3] = 1
-if args.all or args.odif:
+if args.all or args.synf:
     classifiers[4] = 1
 
 means = fn.run("XNOR", classifiers, mc_rep, n_test)
@@ -61,6 +61,6 @@ if args.all or args.sdt:
 if args.all or args.sdf:
     write_result("../results/sdf/xnor_exp_xor_error.txt", means[6])
     write_result("../results/sdf/xnor_exp_xnor_error.txt", means[7])
-if args.all or args.odif:
-    write_result("../results/odif/xnor_exp_xor_error.txt", means[8])
-    write_result("../results/odif/xnor_exp_xnor_error.txt", means[9])
+if args.all or args.synf:
+    write_result("../results/synf/xnor_exp_xor_error.txt", means[8])
+    write_result("../results/synf/xnor_exp_xnor_error.txt", means[9])

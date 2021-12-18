@@ -124,23 +124,21 @@ def experiment(angle, classifiers, n_xor, n_rxor, n_test):
             if i == 0:
                 synf.add_task(X, y, n_estimators=10, task_id=0)
                 synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
-                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=0)
             elif i < (n_xor / 25):
                 synf.update_task(X, y, task_id=0)
                 synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
-                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=0)
             elif i == (n_xor / 25):
                 synf.add_task(X, y, n_estimators=10, task_id=1)
-                synf_xor_y_hat = synf.predict(test_x_xor, task_id=1)
+                synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
                 synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=1)
             elif i < (n_xor + n_rxor) / 25:
                 synf.update_task(X, y, task_id=1)
-                synf_xor_y_hat = synf.predict(test_x_xor, task_id=1)
+                synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
                 synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=1)
             elif i < (2 * n_xor + n_rxor) / 25:
                 synf.update_task(X, y, task_id=0)
                 synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
-                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=0)
+                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=1)
 
             errors[8, i] = 1 - np.mean(synf_xor_y_hat == test_y_xor)
             errors[9, i] = 1 - np.mean(synf_rxor_y_hat == test_y_rxor)
@@ -215,7 +213,7 @@ def r_xor_plot_error(mean_error):
     ax1.set_yscale("log")
     ax1.yaxis.set_major_formatter(ScalarFormatter())
     ax1.set_yticks([0.1, 0.3, 0.5, 0.9])
-    ax1.set_xticks([750, 1500, 2250])
+    ax1.set_xticks([0, 750, 1500, 2250])
     ax1.axvline(x=750, c="gray", linewidth=1.5, linestyle="dashed")
     ax1.axvline(x=1500, c="gray", linewidth=1.5, linestyle="dashed")
 
@@ -230,10 +228,12 @@ def r_xor_plot_error(mean_error):
 
     ######## RXOR
     ax1 = fig.add_subplot(gs[7:, 8:14])
+    rxor_range = (100 * np.arange(0.25, 22.75, step=0.25)).astype(int)[30:]
+
     # Hoeffding Tree R-XOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[1],
+        rxor_range,
+        mean_error[1, 30:],
         label=algorithms[0],
         c=colors[4],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -241,8 +241,8 @@ def r_xor_plot_error(mean_error):
     )
     # Mondrian Forest R-XOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[3],
+        rxor_range,
+        mean_error[3, 30:],
         label=algorithms[1],
         c=colors[5],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -250,8 +250,8 @@ def r_xor_plot_error(mean_error):
     )
     # Stream Decision Tree R-XOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[5],
+        rxor_range,
+        mean_error[5, 30:],
         label=algorithms[2],
         c=colors[2],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -259,8 +259,8 @@ def r_xor_plot_error(mean_error):
     )
     # Stream Decision Forest R-XOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[7],
+        rxor_range,
+        mean_error[7, 30:],
         label=algorithms[3],
         c=colors[3],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -268,8 +268,8 @@ def r_xor_plot_error(mean_error):
     )
     # Synergistic Forest R-XOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[9],
+        rxor_range,
+        mean_error[9, 30:],
         label=algorithms[4],
         c=colors[9],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -283,7 +283,7 @@ def r_xor_plot_error(mean_error):
     ax1.set_yscale("log")
     ax1.yaxis.set_major_formatter(ScalarFormatter())
     ax1.set_yticks([0.1, 0.3, 0.5, 0.9])
-    ax1.set_xticks([750, 1500, 2250])
+    ax1.set_xticks([0, 750, 1500, 2250])
     ax1.axvline(x=750, c="gray", linewidth=1.5, linestyle="dashed")
     ax1.axvline(x=1500, c="gray", linewidth=1.5, linestyle="dashed")
     right_side = ax1.spines["right"]
@@ -363,7 +363,7 @@ def xnor_plot_error(mean_error):
     ax1.set_yscale("log")
     ax1.yaxis.set_major_formatter(ScalarFormatter())
     ax1.set_yticks([0.1, 0.3, 0.5, 0.9])
-    ax1.set_xticks([750, 1500, 2250])
+    ax1.set_xticks([0, 750, 1500, 2250])
     ax1.axvline(x=750, c="gray", linewidth=1.5, linestyle="dashed")
     ax1.axvline(x=1500, c="gray", linewidth=1.5, linestyle="dashed")
 
@@ -378,10 +378,11 @@ def xnor_plot_error(mean_error):
 
     ######## XNOR
     ax1 = fig.add_subplot(gs[7:, 8:14])
+    xnor_range = (100 * np.arange(0.25, 22.75, step=0.25)).astype(int)[30:]
     # Hoeffding Tree XNOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[1],
+        xnor_range,
+        mean_error[1, 30:],
         label=algorithms[0],
         c=colors[4],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -389,8 +390,8 @@ def xnor_plot_error(mean_error):
     )
     # Mondrian Forest XNOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[3],
+        xnor_range,
+        mean_error[3, 30:],
         label=algorithms[1],
         c=colors[5],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -398,8 +399,8 @@ def xnor_plot_error(mean_error):
     )
     # Stream Decision Tree XNOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[5],
+        xnor_range,
+        mean_error[5, 30:],
         label=algorithms[2],
         c=colors[2],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -407,8 +408,8 @@ def xnor_plot_error(mean_error):
     )
     # Stream Decision Forest XNOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[7],
+        xnor_range,
+        mean_error[7, 30:],
         label=algorithms[3],
         c=colors[3],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -416,8 +417,8 @@ def xnor_plot_error(mean_error):
     )
     # Synergistic Forest XNOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[9],
+        xnor_range,
+        mean_error[9, 30:],
         label=algorithms[4],
         c=colors[9],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -431,7 +432,7 @@ def xnor_plot_error(mean_error):
     ax1.set_yscale("log")
     ax1.yaxis.set_major_formatter(ScalarFormatter())
     ax1.set_yticks([0.1, 0.3, 0.5, 0.9])
-    ax1.set_xticks([750, 1500, 2250])
+    ax1.set_xticks([0, 750, 1500, 2250])
     ax1.axvline(x=750, c="gray", linewidth=1.5, linestyle="dashed")
     ax1.axvline(x=1500, c="gray", linewidth=1.5, linestyle="dashed")
     right_side = ax1.spines["right"]

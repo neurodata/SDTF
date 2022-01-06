@@ -2,6 +2,7 @@
 Author: Haoyin Xu
 """
 import time
+import psutil
 import argparse
 import numpy as np
 import torchvision.datasets as datasets
@@ -10,7 +11,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from river import tree
 from skgarden import MondrianForestClassifier
-from sdtf import StreamDecisionForest, CascadeStreamForest
+from sdtf import StreamDecisionForest
 
 
 def write_result(filename, acc_ls):
@@ -37,6 +38,8 @@ def experiment_dt():
     dt_l = []
     train_time_l = []
     test_time_l = []
+    v_m_l = []
+    s_m_l = []
 
     dt = DecisionTreeClassifier()
 
@@ -56,7 +59,13 @@ def experiment_dt():
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
-    return dt_l, train_time_l, test_time_l
+        # Check memory
+        v_m = psutil.virtual_memory()[2]
+        v_m_l.append(v_m)
+        s_m = psutil.swap_memory()[3]
+        s_m_l.append(s_m)
+
+    return dt_l, train_time_l, test_time_l, v_m_l, s_m_l
 
 
 def experiment_rf():
@@ -64,6 +73,8 @@ def experiment_rf():
     rf_l = []
     train_time_l = []
     test_time_l = []
+    v_m_l = []
+    s_m_l = []
 
     rf = RandomForestClassifier()
 
@@ -83,7 +94,13 @@ def experiment_rf():
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
-    return rf_l, train_time_l, test_time_l
+        # Check memory
+        v_m = psutil.virtual_memory()[2]
+        v_m_l.append(v_m)
+        s_m = psutil.swap_memory()[3]
+        s_m_l.append(s_m)
+
+    return rf_l, train_time_l, test_time_l, v_m_l, s_m_l
 
 
 def experiment_ht():
@@ -91,6 +108,8 @@ def experiment_ht():
     ht_l = []
     train_time_l = []
     test_time_l = []
+    v_m_l = []
+    s_m_l = []
 
     ht = tree.HoeffdingTreeClassifier(max_size=1000, grace_period=2)
 
@@ -118,6 +137,12 @@ def experiment_ht():
             end_time = time.perf_counter()
             test_time_l.append(end_time - start_time)
 
+            # Check memory
+            v_m = psutil.virtual_memory()[2]
+            v_m_l.append(v_m)
+            s_m = psutil.swap_memory()[3]
+            s_m_l.append(s_m)
+
     # Reformat the train times
     new_train_time_l = []
     for i in range(1, X_train.shape[0]):
@@ -126,7 +151,7 @@ def experiment_ht():
             new_train_time_l.append(train_time_l[i])
     train_time_l = new_train_time_l
 
-    return ht_l, train_time_l, test_time_l
+    return ht_l, train_time_l, test_time_l, v_m_l, s_m_l
 
 
 def experiment_mf():
@@ -134,6 +159,8 @@ def experiment_mf():
     mf_l = []
     train_time_l = []
     test_time_l = []
+    v_m_l = []
+    s_m_l = []
 
     mf = MondrianForestClassifier(n_estimators=10)
 
@@ -153,11 +180,17 @@ def experiment_mf():
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
+        # Check memory
+        v_m = psutil.virtual_memory()[2]
+        v_m_l.append(v_m)
+        s_m = psutil.swap_memory()[3]
+        s_m_l.append(s_m)
+
     # Reformat the train times
     for i in range(1, 500):
         train_time_l[i] += train_time_l[i - 1]
 
-    return mf_l, train_time_l, test_time_l
+    return mf_l, train_time_l, test_time_l, v_m_l, s_m_l
 
 
 def experiment_sdt():
@@ -165,6 +198,8 @@ def experiment_sdt():
     sdt_l = []
     train_time_l = []
     test_time_l = []
+    v_m_l = []
+    s_m_l = []
 
     sdt = DecisionTreeClassifier()
 
@@ -184,11 +219,17 @@ def experiment_sdt():
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
+        # Check memory
+        v_m = psutil.virtual_memory()[2]
+        v_m_l.append(v_m)
+        s_m = psutil.swap_memory()[3]
+        s_m_l.append(s_m)
+
     # Reformat the train times
     for i in range(1, 500):
         train_time_l[i] += train_time_l[i - 1]
 
-    return sdt_l, train_time_l, test_time_l
+    return sdt_l, train_time_l, test_time_l, v_m_l, s_m_l
 
 
 def experiment_sdf():
@@ -196,6 +237,8 @@ def experiment_sdf():
     sdf_l = []
     train_time_l = []
     test_time_l = []
+    v_m_l = []
+    s_m_l = []
 
     sdf = StreamDecisionForest()
 
@@ -215,42 +258,17 @@ def experiment_sdf():
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
-    # Reformat the train times
-    for i in range(1, 500):
-        train_time_l[i] += train_time_l[i - 1]
-
-    return sdf_l, train_time_l, test_time_l
-
-
-def experiment_csf():
-    """Runs experiments for Cascade Stream Forest"""
-    csf_l = []
-    train_time_l = []
-    test_time_l = []
-
-    csf = CascadeStreamForest()
-
-    for i in range(500):
-        X_t = X_r[i * 100 : (i + 1) * 100]
-        y_t = y_r[i * 100 : (i + 1) * 100]
-
-        # Train the model
-        start_time = time.perf_counter()
-        csf.partial_fit(X_t, y_t, classes=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-        end_time = time.perf_counter()
-        train_time_l.append(end_time - start_time)
-
-        # Test the model
-        start_time = time.perf_counter()
-        csf_l.append(prediction(csf))
-        end_time = time.perf_counter()
-        test_time_l.append(end_time - start_time)
+        # Check memory
+        v_m = psutil.virtual_memory()[2]
+        v_m_l.append(v_m)
+        s_m = psutil.swap_memory()[3]
+        s_m_l.append(s_m)
 
     # Reformat the train times
     for i in range(1, 500):
         train_time_l[i] += train_time_l[i - 1]
 
-    return csf_l, train_time_l, test_time_l
+    return sdf_l, train_time_l, test_time_l, v_m_l, s_m_l
 
 
 # Prepare CIFAR data
@@ -284,9 +302,6 @@ parser.add_argument(
 parser.add_argument(
     "-sdf", help="stream decision forests", required=False, action="store_true"
 )
-parser.add_argument(
-    "-csf", help="cascade stream forests", required=False, action="store_true"
-)
 args = parser.parse_args()
 
 # Perform experiments
@@ -294,131 +309,148 @@ if args.all or args.dt:
     dt_acc_l = []
     dt_train_t_l = []
     dt_test_t_l = []
+    dt_v_m_l = []
+    dt_s_m_l = []
     for i in range(10):
         p = permutation(X_train.shape[0])
 
         X_r = X_train[p]
         y_r = y_train[p]
 
-        dt_acc, dt_train_t, dt_test_t = experiment_dt()
+        dt_acc, dt_train_t, dt_test_t, dt_v_m, dt_s_m = experiment_dt()
         dt_acc_l.append(dt_acc)
         dt_train_t_l.append(dt_train_t)
         dt_test_t_l.append(dt_test_t)
+        dt_v_m_l.append(dt_v_m)
+        dt_s_m_l.append(dt_s_m)
 
         write_result("../results/dt/cifar10_acc.txt", dt_acc_l)
         write_result("../results/dt/cifar10_train_t.txt", dt_train_t_l)
         write_result("../results/dt/cifar10_test_t.txt", dt_test_t_l)
+        write_result("../results/dt/cifar10_v_m.txt", dt_v_m_l)
+        write_result("../results/dt/cifar10_s_m.txt", dt_s_m_l)
 
 if args.all or args.rf:
     rf_acc_l = []
     rf_train_t_l = []
     rf_test_t_l = []
+    rf_v_m_l = []
+    rf_s_m_l = []
     for i in range(10):
         p = permutation(X_train.shape[0])
 
         X_r = X_train[p]
         y_r = y_train[p]
 
-        rf_acc, rf_train_t, rf_test_t = experiment_rf()
+        rf_acc, rf_train_t, rf_test_t, rf_v_m, rf_s_m = experiment_rf()
         rf_acc_l.append(rf_acc)
         rf_train_t_l.append(rf_train_t)
         rf_test_t_l.append(rf_test_t)
+        rf_v_m_l.append(rf_v_m)
+        rf_s_m_l.append(rf_s_m)
 
         write_result("../results/rf/cifar10_acc.txt", rf_acc_l)
         write_result("../results/rf/cifar10_train_t.txt", rf_train_t_l)
         write_result("../results/rf/cifar10_test_t.txt", rf_test_t_l)
+        write_result("../results/rf/cifar10_v_m.txt", rf_v_m_l)
+        write_result("../results/rf/cifar10_s_m.txt", rf_s_m_l)
 
 if args.all or args.ht:
     ht_acc_l = []
     ht_train_t_l = []
     ht_test_t_l = []
+    ht_v_m_l = []
+    ht_s_m_l = []
     for i in range(10):
         p = permutation(X_train.shape[0])
 
         X_r = X_train[p]
         y_r = y_train[p]
 
-        ht_acc, ht_train_t, ht_test_t = experiment_ht()
+        ht_acc, ht_train_t, ht_test_t, ht_v_m, ht_s_m = experiment_ht()
         ht_acc_l.append(ht_acc)
         ht_train_t_l.append(ht_train_t)
         ht_test_t_l.append(ht_test_t)
+        ht_v_m_l.append(ht_v_m)
+        ht_s_m_l.append(ht_s_m)
 
         write_result("../results/ht/cifar10_acc.txt", ht_acc_l)
         write_result("../results/ht/cifar10_train_t.txt", ht_train_t_l)
         write_result("../results/ht/cifar10_test_t.txt", ht_test_t_l)
+        write_result("../results/ht/cifar10_v_m.txt", ht_v_m_l)
+        write_result("../results/ht/cifar10_s_m.txt", ht_s_m_l)
 
 if args.all or args.mf:
     mf_acc_l = []
     mf_train_t_l = []
     mf_test_t_l = []
+    mf_v_m_l = []
+    mf_s_m_l = []
     for i in range(10):
         p = permutation(X_train.shape[0])
 
         X_r = X_train[p]
         y_r = y_train[p]
 
-        mf_acc, mf_train_t, mf_test_t = experiment_mf()
+        mf_acc, mf_train_t, mf_test_t, mf_v_m, mf_s_m = experiment_mf()
         mf_acc_l.append(mf_acc)
         mf_train_t_l.append(mf_train_t)
         mf_test_t_l.append(mf_test_t)
+        mf_v_m_l.append(mf_v_m)
+        mf_s_m_l.append(mf_s_m)
 
         write_result("../results/mf/cifar10_acc.txt", mf_acc_l)
         write_result("../results/mf/cifar10_train_t.txt", mf_train_t_l)
         write_result("../results/mf/cifar10_test_t.txt", mf_test_t_l)
+        write_result("../results/mf/cifar10_v_m.txt", mf_v_m_l)
+        write_result("../results/mf/cifar10_s_m.txt", mf_s_m_l)
 
 if args.all or args.sdt:
     sdt_acc_l = []
     sdt_train_t_l = []
     sdt_test_t_l = []
+    sdt_v_m_l = []
+    sdt_s_m_l = []
     for i in range(10):
         p = permutation(X_train.shape[0])
 
         X_r = X_train[p]
         y_r = y_train[p]
 
-        sdt_acc, sdt_train_t, sdt_test_t = experiment_sdt()
+        sdt_acc, sdt_train_t, sdt_test_t, sdt_v_m, sdt_s_m = experiment_sdt()
         sdt_acc_l.append(sdt_acc)
         sdt_train_t_l.append(sdt_train_t)
         sdt_test_t_l.append(sdt_test_t)
+        sdt_v_m_l.append(sdt_v_m)
+        sdt_s_m_l.append(sdt_s_m)
 
         write_result("../results/sdt/cifar10_acc.txt", sdt_acc_l)
         write_result("../results/sdt/cifar10_train_t.txt", sdt_train_t_l)
         write_result("../results/sdt/cifar10_test_t.txt", sdt_test_t_l)
+        write_result("../results/sdt/cifar10_v_m.txt", sdt_v_m_l)
+        write_result("../results/sdt/cifar10_s_m.txt", sdt_s_m_l)
 
 if args.all or args.sdf:
     sdf_acc_l = []
     sdf_train_t_l = []
     sdf_test_t_l = []
+    sdf_v_m_l = []
+    sdf_s_m_l = []
     for i in range(10):
         p = permutation(X_train.shape[0])
 
         X_r = X_train[p]
         y_r = y_train[p]
 
-        sdf_acc, sdf_train_t, sdf_test_t = experiment_sdf()
+        sdf_acc, sdf_train_t, sdf_test_t, sdf_v_m, sdf_s_m = experiment_sdf()
         sdf_acc_l.append(sdf_acc)
         sdf_train_t_l.append(sdf_train_t)
         sdf_test_t_l.append(sdf_test_t)
+        sdf_v_m_l.append(sdf_v_m)
+        sdf_s_m_l.append(sdf_s_m)
 
         write_result("../results/sdf/cifar10_acc.txt", sdf_acc_l)
         write_result("../results/sdf/cifar10_train_t.txt", sdf_train_t_l)
         write_result("../results/sdf/cifar10_test_t.txt", sdf_test_t_l)
-
-if args.all or args.csf:
-    csf_acc_l = []
-    csf_train_t_l = []
-    csf_test_t_l = []
-    for i in range(10):
-        p = permutation(X_train.shape[0])
-
-        X_r = X_train[p]
-        y_r = y_train[p]
-
-        csf_acc, csf_train_t, csf_test_t = experiment_csf()
-        csf_acc_l.append(csf_acc)
-        csf_train_t_l.append(csf_train_t)
-        csf_test_t_l.append(csf_test_t)
-
-        write_result("../results/csf/cifar10_acc.txt", csf_acc_l)
-        write_result("../results/csf/cifar10_train_t.txt", csf_train_t_l)
-        write_result("../results/csf/cifar10_test_t.txt", csf_test_t_l)
+        write_result("../results/sdf/cifar10_v_m.txt", sdf_v_m_l)
+        write_result("../results/sdf/cifar10_s_m.txt", sdf_s_m_l)

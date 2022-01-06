@@ -2,6 +2,7 @@ wheel
 -r requirements.txt
 cython
 json
+psutil
 river
 scikit-garden
 openml

@@ -12,7 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from river import tree
 from skgarden import MondrianForestClassifier
-from sdtf import StreamDecisionForest, CascadeStreamForest
+from sdtf import StreamDecisionForest
 
 
 def write_result(filename, acc_ls):

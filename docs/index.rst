@@ -56,7 +56,7 @@ Overview
 
 The package includes two ensemble implementations (**Stream Decision Forest** and **Cascade Stream Forest**).
 
-Based on ``scikit-learn`` `fork <https://github.com/neurodata/scikit-learn/tree/stream>`_.
+Based on ``scikit-learn`` `fork <https://github.com/PSSF23/scikit-learn-stream/tree/stream>`_.
 
 Install
 -------
@@ -122,7 +122,9 @@ Benchmarks
 .. toctree::
   :maxdepth: 1
 
-  visual
+  cc18
+  cc18_fill
+  cc18_select
   xor_experiments
 
 API

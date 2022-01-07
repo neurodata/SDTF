@@ -133,7 +133,6 @@ def experiment_ht():
                 if y_pred == y_test[j]:
                     p_t += 1
             ht_l.append(p_t / X_test.shape[0])
-            print(p_t / X_test.shape[0], i)
             end_time = time.perf_counter()
             test_time_l.append(end_time - start_time)
 

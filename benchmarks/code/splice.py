@@ -112,7 +112,7 @@ def experiment_ht():
     v_m_l = []
     s_m_l = []
 
-    ht = tree.HoeffdingTreeClassifier(grace_period=2)
+    ht = tree.HoeffdingTreeClassifier(max_size=1000, grace_period=2)
 
     for i in range(X_train.shape[0]):
         X_t = X_r[i]

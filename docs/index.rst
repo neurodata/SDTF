@@ -83,7 +83,7 @@ which you can install manually:
 
 .. code-block::
 
-  git clone https://github.com/neurodata/scikit-learn -b stream --single-branch
+  git clone https://github.com/PSSF23/scikit-learn-stream -b stream --single-branch
   cd scikit-learn
   python setup.py install
 

@@ -17,6 +17,7 @@ from sklearn.ensemble._forest import (
 )
 from sklearn.utils import check_random_state, compute_sample_weight
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
+from sklearn.metrics import accuracy_score
 from joblib import Parallel, delayed
 
 
@@ -70,11 +71,22 @@ class StreamDecisionForest:
         - If float, then draw `max_samples * X.shape[0]` samples. Thus,
           `max_samples` should be in the interval `(0.0, 1.0]`.
 
+    n_swaps : int, default=1
+        The number of trees to swap at each partial fitting. The actual
+        swaps occur with `1/n_batches_` probability.
+
     Attributes
     ----------
     forest_ : list of sklearn.tree.DecisionTreeClassifier
-        An internal list that contains random
+        An internal list that contains all
         sklearn.tree.DecisionTreeClassifier.
+
+    classes_ : list of all unique class labels
+        An internal list that stores class labels after the first call
+        to `partial_fit`.
+
+    n_batches_ : int
+        The number of batches seen with `partial_fit`.
     """
 
     def __init__(
@@ -85,15 +97,61 @@ class StreamDecisionForest:
         bootstrap=True,
         n_jobs=None,
         max_samples=None,
+        n_swaps=1,
     ):
         self.forest_ = []
+        self.n_batches_ = 0
+        self.n_estimators = n_estimators
+        self.max_features = max_features
+        self.splitter = splitter
         self.bootstrap = bootstrap
         self.n_jobs = n_jobs
         self.max_samples = max_samples
+        self.n_swaps = n_swaps
 
-        for i in range(n_estimators):
-            tree = DecisionTreeClassifier(max_features=max_features, splitter=splitter)
+        for i in range(self.n_estimators):
+            tree = DecisionTreeClassifier(
+                max_features=self.max_features, splitter=self.splitter
+            )
             self.forest_.append(tree)
+
+    def fit(self, X, y, classes=None):
+        """
+        Partially fits the forest to data X with labels y.
+
+        Parameters
+        ----------
+        X : ndarray
+            Input data matrix.
+
+        y : ndarray
+            Output (i.e. response data matrix).
+
+        classes : ndarray, default=None
+            List of all the classes that can possibly appear in the y vector.
+            Must be provided at the first call to partial_fit, can be omitted
+            in subsequent calls.
+
+        Returns
+        -------
+        self : StreamDecisionForest
+            The object itself.
+        """
+        if classes is None:
+            self.classes_ = np.unique(y)
+        else:
+            self.classes_ = classes
+
+        if self.n_batches_ != 0:
+            self.forest_ = []
+            for i in range(self.n_estimators):
+                tree = DecisionTreeClassifier(
+                    max_features=self.max_features, splitter=self.splitter
+                )
+                self.forest_.append(tree)
+            self.n_batches_ = 0
+
+        return self.partial_fit(X, y, classes=self.classes_)
 
     def partial_fit(self, X, y, classes=None):
         """
@@ -118,6 +176,8 @@ class StreamDecisionForest:
             The object itself.
         """
         X, y = check_X_y(X, y)
+        if classes is not None:
+            self.classes_ = classes
 
         # Update stream decision trees with random inputs
         if self.bootstrap:
@@ -128,10 +188,48 @@ class StreamDecisionForest:
         # Update existing stream decision trees
         trees = Parallel(n_jobs=self.n_jobs)(
             delayed(_partial_fit)(
-                tree, X, y, n_samples_bootstrap=n_samples_bootstrap, classes=classes
+                tree,
+                X,
+                y,
+                n_samples_bootstrap=n_samples_bootstrap,
+                classes=self.classes_,
             )
             for tree in self.forest_
         )
+        self.n_batches_ += 1
+
+        # Calculate probability of swaps
+        swap_prob = 1 / self.n_batches_
+        if self.n_batches_ >= 2 and np.random.random() <= swap_prob:
+            # Evaluate forest performance
+            results = Parallel(n_jobs=self.n_jobs)(
+                delayed(tree.predict)(X) for tree in trees
+            )
+
+            # Sort predictions by accuracy
+            acc_l = []
+            for idx, result in enumerate(results):
+                acc_l.append([accuracy_score(result, y), idx])
+            acc_l = sorted(acc_l, key=lambda x: x[0])
+
+            # Generate new trees
+            new_trees = Parallel(n_jobs=self.n_jobs)(
+                delayed(_partial_fit)(
+                    DecisionTreeClassifier(
+                        max_features=self.max_features, splitter=self.splitter
+                    ),
+                    X,
+                    y,
+                    n_samples_bootstrap=n_samples_bootstrap,
+                    classes=self.classes_,
+                )
+                for i in range(self.n_swaps)
+            )
+
+            # Swap worst performing trees with new trees
+            for i in range(self.n_swaps):
+                trees[acc_l[i][1]] = new_trees[i]
+
         self.forest_ = trees
 
         return self
@@ -225,6 +323,34 @@ class CascadeStreamForest:
         self.bootstrap = bootstrap
         self.n_jobs = n_jobs
         self.max_samples = max_samples
+
+    def fit(self, X, y, classes=None):
+        """
+        Partially fits the forest to data X with labels y.
+
+        Parameters
+        ----------
+        X : ndarray
+            Input data matrix.
+
+        y : ndarray
+            Output (i.e. response data matrix).
+
+        classes : ndarray, default=None
+            List of all the classes that can possibly appear in the y vector.
+            Must be provided at the first call to partial_fit, can be omitted
+            in subsequent calls.
+
+        Returns
+        -------
+        self : CascadeStreamForest
+            The object itself.
+        """
+
+        if classes is None:
+            classes = np.unique(y)
+
+        return self.partial_fit(X, y, classes=classes)
 
     def partial_fit(self, X, y, classes=None):
         """

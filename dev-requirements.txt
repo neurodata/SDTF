@@ -3,7 +3,7 @@ wheel
 cython
 psutil
 river
-scikit-garden
+#scikit-garden
 openml
 black[jupyter]
 twine

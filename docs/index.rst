@@ -122,9 +122,10 @@ Benchmarks
 .. toctree::
   :maxdepth: 1
 
+  iris
+  select
   cc18
   cc18_fill
-  cc18_select
   xor_experiments
 
 API

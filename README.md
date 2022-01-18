@@ -14,7 +14,7 @@
 
 The package includes two ensemble implementations (**Stream Decision Forest** and **Cascade Stream Forest**).
 
-Based on `scikit-learn` [fork](https://github.com/neurodata/scikit-learn/tree/stream).
+Based on `scikit-learn` [fork](https://github.com/PSSF23/scikit-learn-stream/tree/stream).
 
 - **Documentation:** https://sdtf.neurodata.io/
 - **Installation Guide:** https://sdtf.neurodata.io/#install

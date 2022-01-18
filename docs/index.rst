@@ -56,7 +56,7 @@ Overview
 
 The package includes two ensemble implementations (**Stream Decision Forest** and **Cascade Stream Forest**).
 
-Based on ``scikit-learn`` `fork <https://github.com/neurodata/scikit-learn/tree/stream>`_.
+Based on ``scikit-learn`` `fork <https://github.com/PSSF23/scikit-learn-stream/tree/stream>`_.
 
 Install
 -------
@@ -83,7 +83,7 @@ which you can install manually:
 
 .. code-block::
 
-  git clone https://github.com/neurodata/scikit-learn -b stream --single-branch
+  git clone https://github.com/PSSF23/scikit-learn-stream -b stream --single-branch
   cd scikit-learn
   python setup.py install
 
@@ -122,7 +122,10 @@ Benchmarks
 .. toctree::
   :maxdepth: 1
 
-  visual
+  iris
+  select
+  cc18
+  cc18_fill
   xor_experiments
 
 API

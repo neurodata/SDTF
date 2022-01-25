@@ -1,0 +1,13 @@
+\section{Wall Times for Three Selected Tasks}
+\label{app:select_time}
+
+\begin{figure*}[!htb]
+\centering
+\includegraphics[width=0.9\textwidth]{select_time}
+  \caption{Multiclass classifications on the Splice \textbf{(left)}, Pendigits \textbf{(center)}, and CIFAR-10 \textbf{(right)} datasets. Cumulative fitting times are shown for all estimators, and two batch estimators' times include refitting at each sample size. Each line represents averaged results from 10 random repetitions. Stream Decision Trees (SDTs) are the most efficient in the CIFAR-10 task. Stream Decision Forests (SDFs) take longer times in the Splice and Pendigits tasks, but the algorithm is overtaken by Hoeffding trees (HTs), batch decision trees (DTs), and random forests (RF) in the CIFAR-10 task. Mondrian forests (MFs) with a limited amount of 10 trees are the most efficient forest classifier.
+  }
+\label{fig:select_time}
+\end{figure*}
+
+In terms of training wall times, SDTs are the most efficient on the CIFAR-10 dataset (Figure \ref{fig:select_time}, right). 
+SDFs take longer times in the Splice and Pendigits tasks (Figure \ref{fig:select_time}, left and center). However, on the CIFAR-10 dataset, HTs are the most inefficient streaming trees, even slower than the two streaming ensembles. Also, as sample size increases, time usage of batch estimators grows more quickly due to refitting, and they surpass SDFs around 2,000 samples. MFs take shorter training times than other streaming forests, which could be attributed to a limited number of estimators (only 10 trees). All training wall times grow linearly as sample size increases.

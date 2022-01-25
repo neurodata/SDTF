@@ -125,7 +125,6 @@ Benchmarks
   iris
   select
   cc18
-  cc18_fill
   xor_experiments
 
 API

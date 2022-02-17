@@ -83,8 +83,8 @@ which you can install manually:
 
 .. code-block::
 
-  git clone https://github.com/PSSF23/scikit-learn-stream -b stream --single-branch
-  cd scikit-learn
+  git clone https://github.com/PSSF23/scikit-learn-stream
+  cd scikit-learn-stream
   python setup.py install
 
 The above local setup requires the following packages:

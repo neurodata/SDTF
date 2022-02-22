@@ -134,7 +134,7 @@ We used \texttt{MondrianForestClassifier} from the scikit-garden python package 
 \end{figure}
 
 For comparison with batch tree estimators, we included batch decision trees and decision forests \citep{breiman_random_2001}. An DF contains a collection of DTs (100 by default) and uses bootstrapping to resample the training data. Each tree in the forest limits the number of features selected at each node split (``max\_features'') and tries to find the best partitions available \citep{breiman_random_2001}.
-With majority voting as predictions, an DF is non-parametric and universally consistent, so it will approach Bayes optimal performance with sufficiently large sample sizes, tree depths, and number of trees \citep{liaw_classification_2002, biau_consistency_2008}.
+With majority voting as predictions, a DF is non-parametric and universally consistent, so it will approach Bayes optimal performance with sufficiently large sample sizes, tree depths, and number of trees \citep{liaw_classification_2002, biau_consistency_2008}.
 Implementations for both algorithms were from the scikit-learn package: \texttt{DecisionTreeClassifier} and \texttt{RandomForestClassifier} \citep{pedregosa_scikit-learn_2011}. All hyperparameters were kept as default.
 
 In all tasks, we incrementally updated HTs and MFs with fixed-sized data batches (100 random samples per batch). At each sample size, DTs and DFs were trained with all available data, including current and previous batches. 
@@ -166,18 +166,9 @@ Dataset & \textbf{Splice} & \textbf{Pendigits} & \textbf{CIFAR-10} \\
 \label{table:data}
 \end{table}
 
-We also used the OpenML-CC18 data suite for further benchmarks on SDFs and DFs. It represents a collection of 72 real-world datasets organized by OpenML and functions as a comprehensive benchmark suite \citep{vanschoren_openml_2013, bischl_openml_2019}. These datasets vary in sample size, feature space, and unique target classes.
+We also used the OpenML-CC18 data suite\footnote{\url{https://www.openml.org/s/99}} for further benchmarks on SDFs and DFs. It represents a collection of 72 real-world datasets organized by OpenML and functions as a comprehensive benchmark suite \citep{vanschoren_openml_2013, bischl_openml_2019}. These datasets vary in sample size, feature space, and unique target classes.
 About half of the tasks are binary classifications, and the other half are multiclass classifications with up to 50 classes. The range of total sample sizes is between 500 and 100,000, while the range of features is from a few to a few thousand \citep{bischl_openml_2019}.
 Datasets were imported using the OpenML-Python package (BSD-3-Clause) \citep{feurer_openml-python_2019}. In the OpenML-CC18 tasks, We used all available samples and ran 5-fold cross validations with SDFs and DFs.
-
-\begin{figure*}[!htb]
-\centering
-\includegraphics[width=0.9\textwidth]{select_acc}
-  \caption{Multiclass classifications on the Splice \textbf{(left)}, Pendigits \textbf{(center)}, and CIFAR-10 \textbf{(right)} datasets. 
-  Each line represents averaged results from 10 randomized repetitions. Stream Decision Forests (SDFs) perform better than all other streaming estimators on the Splice and CIFAR-10 datasets. They also perform very similarly to Mondrian forests (MFs) and decision forests (DFs) in the Pendigits task. The performance of Hoeffding trees (HTs) either remains almost constant or experiences significant fluctuations. Especially in the Pendigits task, the accuracy drops continuously from around 4,000 samples to about 6,000 samples. MFs perform as best as DFs in the Pendigits task, but their accuracy significantly drops in the Splice task, only surpassing that of HTs. Batch decision trees (DTs) perform consistently in all tasks.
-  }
-\label{fig:select_acc}
-\end{figure*}
 
 \subsection{Evaluation Metrics}
 Classifier performance is evaluated by classification accuracy, virtual memories, and training wall times. 
@@ -187,6 +178,15 @@ On the three selected datasets, we use the psutil python package (BSD-3-Clause) 
 The training wall times calculate the fitting times for the given model without hyperparameter tuning. All estimators' times are calculated by accumulating the training times of data batches, which account for batch estimators' refitting. We do not report any error bars as they are uninformative. 
 To accommodate the space and time constraints of MFs and HTs, the three selected tasks were run without parallelization on a Microsoft Azure 6-core (Intel Xeon E5-2690 v3) Standard\_NC6 instance with 56 GB memory and 340 GB SSD storage.
 The OpenML-CC18 experiments were run with parallelization on a Microsoft Azure 4-core (Intel Xeon E5-2673 v4) Standard\_D4\_v3 instance with 16 GB memory and 100 GB SSD storage.
+
+\begin{figure*}[!htb]
+\centering
+\includegraphics[width=0.9\textwidth]{select_acc}
+  \caption{Multiclass classifications on the Splice \textbf{(left)}, Pendigits \textbf{(center)}, and CIFAR-10 \textbf{(right)} datasets. 
+  Each line represents averaged results from 10 randomized repetitions. Stream Decision Forests (SDFs) perform better than all other streaming estimators on the Splice and CIFAR-10 datasets. They also perform very similarly to Mondrian forests (MFs) and decision forests (DFs) in the Pendigits task. The performance of Hoeffding trees (HTs) either remains almost constant or experiences significant fluctuations. Especially in the Pendigits task, the accuracy drops continuously from around 4,000 samples to about 6,000 samples. MFs perform as best as DFs in the Pendigits task, but their accuracy significantly drops in the Splice task, only surpassing that of HTs. Batch decision trees (DTs) perform consistently in all tasks.
+  }
+\label{fig:select_acc}
+\end{figure*}
 
 \section{Results}
 \label{results}
@@ -227,7 +227,7 @@ See Appendix \ref{app:select_time} for training wall times on the three datasets
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=0.8\columnwidth]{cc18_wide}
-  \caption{Classifications on the OpenML-CC18 datasets. All plots show averaged accuracy over five folds and have dataset IDs as titles. Sample sizes correspond to respective datasets. In many tasks, Stream Decision Forests (SDFs) perform as good, sometimes even better, than decision forests (DFs). Moreover, SDF accuracy consistently increases with new samples across different data domains, which makes SDFs applicable to diverse real-world problems.
+  \caption{Classifications on the OpenML-CC18 datasets with max sample size, number of features, and number of classes. All plots show averaged accuracy over five folds and are listed in the order of dataset IDs. Sample sizes correspond to respective datasets. In many tasks, Stream Decision Forests (SDFs) perform as good, sometimes even better, than decision forests (DFs). Moreover, SDF accuracy consistently increases with new samples across different data domains, which makes SDFs applicable to diverse real-world problems.
   }
 \label{fig:cc18}
 \end{figure}

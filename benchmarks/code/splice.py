@@ -14,24 +14,7 @@ from river import tree
 from skgarden import MondrianForestClassifier
 from sdtf import StreamDecisionForest
 
-
-def write_result(filename, acc_ls):
-    """Writes results to specified text file"""
-    output = open(filename, "w")
-    for acc in acc_ls:
-        output.write(str(acc) + "\n")
-
-
-def prediction(classifier):
-    """Generates predictions from model"""
-    predictions = classifier.predict(X_test)
-
-    p_t = 0
-    for i in range(X_test.shape[0]):
-        if predictions[i] == y_test[i]:
-            p_t += 1
-
-    return p_t / X_test.shape[0]
+from toolbox import *
 
 
 def experiment_dt():

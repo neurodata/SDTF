@@ -14,6 +14,8 @@ from proglearn.forest import LifelongClassificationForest
 from river import tree
 import ast
 
+from toolbox import *
+
 
 def load_result(filename):
     """Loads results from specified file"""

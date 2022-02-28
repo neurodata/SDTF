@@ -143,4 +143,4 @@ benchmarks/*
 
 # Azure files
 .amlignore
-.amlignore.amltmp
+*.amltmp

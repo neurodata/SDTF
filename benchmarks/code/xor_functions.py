@@ -11,6 +11,7 @@ from matplotlib.ticker import ScalarFormatter
 from sdtf import StreamDecisionForest
 from sklearn.tree import DecisionTreeClassifier
 from proglearn.forest import LifelongClassificationForest
+from proglearn.sims import generate_gaussian_parity
 from river import tree
 import ast
 
@@ -124,26 +125,27 @@ def experiment(angle, classifiers, n_xor, n_rxor, n_test):
             if i == 0:
                 synf.add_task(X, y, n_estimators=10, task_id=0)
                 synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
-                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=0)
             elif i < (n_xor / 25):
                 synf.update_task(X, y, task_id=0)
                 synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
-                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=0)
             elif i == (n_xor / 25):
                 synf.add_task(X, y, n_estimators=10, task_id=1)
-                synf_xor_y_hat = synf.predict(test_x_xor, task_id=1)
+                synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
                 synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=1)
             elif i < (n_xor + n_rxor) / 25:
                 synf.update_task(X, y, task_id=1)
-                synf_xor_y_hat = synf.predict(test_x_xor, task_id=1)
+                synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
                 synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=1)
             elif i < (2 * n_xor + n_rxor) / 25:
                 synf.update_task(X, y, task_id=0)
                 synf_xor_y_hat = synf.predict(test_x_xor, task_id=0)
-                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=0)
+                synf_rxor_y_hat = synf.predict(test_x_rxor, task_id=1)
 
-            errors[8, i] = 1 - np.mean(synf_xor_y_hat == test_y_xor)
-            errors[9, i] = 1 - np.mean(synf_rxor_y_hat == test_y_rxor)
+            if i < (n_xor / 25):
+                errors[8, i] = 1 - np.mean(synf_xor_y_hat == test_y_xor)
+            if i >= (n_xor / 25):
+                errors[8, i] = 1 - np.mean(synf_xor_y_hat == test_y_xor)
+                errors[9, i] = 1 - np.mean(synf_rxor_y_hat == test_y_rxor)
 
     return errors
 
@@ -215,7 +217,7 @@ def r_xor_plot_error(mean_error):
     ax1.set_yscale("log")
     ax1.yaxis.set_major_formatter(ScalarFormatter())
     ax1.set_yticks([0.1, 0.3, 0.5, 0.9])
-    ax1.set_xticks([750, 1500, 2250])
+    ax1.set_xticks([0, 750, 1500, 2250])
     ax1.axvline(x=750, c="gray", linewidth=1.5, linestyle="dashed")
     ax1.axvline(x=1500, c="gray", linewidth=1.5, linestyle="dashed")
 
@@ -230,10 +232,12 @@ def r_xor_plot_error(mean_error):
 
     ######## RXOR
     ax1 = fig.add_subplot(gs[7:, 8:14])
+    rxor_range = (100 * np.arange(0.25, 22.75, step=0.25)).astype(int)[30:]
+
     # Hoeffding Tree R-XOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[1],
+        rxor_range,
+        mean_error[1, 30:],
         label=algorithms[0],
         c=colors[4],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -241,8 +245,8 @@ def r_xor_plot_error(mean_error):
     )
     # Mondrian Forest R-XOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[3],
+        rxor_range,
+        mean_error[3, 30:],
         label=algorithms[1],
         c=colors[5],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -250,8 +254,8 @@ def r_xor_plot_error(mean_error):
     )
     # Stream Decision Tree R-XOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[5],
+        rxor_range,
+        mean_error[5, 30:],
         label=algorithms[2],
         c=colors[2],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -259,8 +263,8 @@ def r_xor_plot_error(mean_error):
     )
     # Stream Decision Forest R-XOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[7],
+        rxor_range,
+        mean_error[7, 30:],
         label=algorithms[3],
         c=colors[3],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -268,8 +272,8 @@ def r_xor_plot_error(mean_error):
     )
     # Synergistic Forest R-XOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[9],
+        rxor_range,
+        mean_error[9, 30:],
         label=algorithms[4],
         c=colors[9],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -283,7 +287,7 @@ def r_xor_plot_error(mean_error):
     ax1.set_yscale("log")
     ax1.yaxis.set_major_formatter(ScalarFormatter())
     ax1.set_yticks([0.1, 0.3, 0.5, 0.9])
-    ax1.set_xticks([750, 1500, 2250])
+    ax1.set_xticks([0, 750, 1500, 2250])
     ax1.axvline(x=750, c="gray", linewidth=1.5, linestyle="dashed")
     ax1.axvline(x=1500, c="gray", linewidth=1.5, linestyle="dashed")
     right_side = ax1.spines["right"]
@@ -363,7 +367,7 @@ def xnor_plot_error(mean_error):
     ax1.set_yscale("log")
     ax1.yaxis.set_major_formatter(ScalarFormatter())
     ax1.set_yticks([0.1, 0.3, 0.5, 0.9])
-    ax1.set_xticks([750, 1500, 2250])
+    ax1.set_xticks([0, 750, 1500, 2250])
     ax1.axvline(x=750, c="gray", linewidth=1.5, linestyle="dashed")
     ax1.axvline(x=1500, c="gray", linewidth=1.5, linestyle="dashed")
 
@@ -378,10 +382,11 @@ def xnor_plot_error(mean_error):
 
     ######## XNOR
     ax1 = fig.add_subplot(gs[7:, 8:14])
+    xnor_range = (100 * np.arange(0.25, 22.75, step=0.25)).astype(int)[30:]
     # Hoeffding Tree XNOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[1],
+        xnor_range,
+        mean_error[1, 30:],
         label=algorithms[0],
         c=colors[4],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -389,8 +394,8 @@ def xnor_plot_error(mean_error):
     )
     # Mondrian Forest XNOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[3],
+        xnor_range,
+        mean_error[3, 30:],
         label=algorithms[1],
         c=colors[5],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -398,8 +403,8 @@ def xnor_plot_error(mean_error):
     )
     # Stream Decision Tree XNOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[5],
+        xnor_range,
+        mean_error[5, 30:],
         label=algorithms[2],
         c=colors[2],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -407,8 +412,8 @@ def xnor_plot_error(mean_error):
     )
     # Stream Decision Forest XNOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[7],
+        xnor_range,
+        mean_error[7, 30:],
         label=algorithms[3],
         c=colors[3],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -416,8 +421,8 @@ def xnor_plot_error(mean_error):
     )
     # Synergistic Forest XNOR
     ax1.plot(
-        (100 * np.arange(0.25, 22.75, step=0.25)).astype(int),
-        mean_error[9],
+        xnor_range,
+        mean_error[9, 30:],
         label=algorithms[4],
         c=colors[9],
         ls=ls[np.sum(1 > 1).astype(int)],
@@ -431,7 +436,7 @@ def xnor_plot_error(mean_error):
     ax1.set_yscale("log")
     ax1.yaxis.set_major_formatter(ScalarFormatter())
     ax1.set_yticks([0.1, 0.3, 0.5, 0.9])
-    ax1.set_xticks([750, 1500, 2250])
+    ax1.set_xticks([0, 750, 1500, 2250])
     ax1.axvline(x=750, c="gray", linewidth=1.5, linestyle="dashed")
     ax1.axvline(x=1500, c="gray", linewidth=1.5, linestyle="dashed")
     right_side = ax1.spines["right"]
@@ -497,75 +502,6 @@ def _generate_2d_rotation(theta=0):
     R = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]])
 
     return R
-
-
-def generate_gaussian_parity(
-    n_samples,
-    centers=None,
-    class_label=None,
-    cluster_std=0.25,
-    angle_params=None,
-    random_state=None,
-):
-    """
-    Generate 2-dimensional Gaussian XOR distribution.
-    (Classic XOR problem but each point is the
-    center of a Gaussian blob distribution)
-    Parameters
-    ----------
-    n_samples : int
-        Total number of points divided among the four
-        clusters with equal probability.
-    centers : array of shape [n_centers,2], optional (default=None)
-        The coordinates of the ceneter of total n_centers blobs.
-    class_label : array of shape [n_centers], optional (default=None)
-        class label for each blob.
-    cluster_std : float, optional (default=1)
-        The standard deviation of the blobs.
-    angle_params: float, optional (default=None)
-        Number of radians to rotate the distribution by.
-    random_state : int, RandomState instance, default=None
-        Determines random number generation for dataset creation. Pass an int
-        for reproducible output across multiple function calls.
-    Returns
-    -------
-    X : array of shape [n_samples, 2]
-        The generated samples.
-    y : array of shape [n_samples]
-        The integer labels for cluster membership of each sample.
-    """
-
-    if random_state != None:
-        np.random.seed(random_state)
-
-    if centers == None:
-        centers = np.array([(-0.5, 0.5), (0.5, 0.5), (-0.5, -0.5), (0.5, -0.5)])
-
-    if class_label == None:
-        class_label = [0, 1, 1, 0]
-
-    blob_num = len(class_label)
-
-    # get the number of samples in each blob with equal probability
-    samples_per_blob = np.random.multinomial(
-        n_samples, 1 / blob_num * np.ones(blob_num)
-    )
-
-    X, y = make_blobs(
-        n_samples=samples_per_blob,
-        n_features=2,
-        centers=centers,
-        cluster_std=cluster_std,
-    )
-
-    for blob in range(blob_num):
-        y[np.where(y == blob)] = class_label[blob]
-
-    if angle_params != None:
-        R = _generate_2d_rotation(angle_params)
-        X = X @ R
-
-    return X, y
 
 
 def get_colors(colors, inds):

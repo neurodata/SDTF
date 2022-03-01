@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score
 
 def write_result(filename, acc_ls):
     """Writes results to specified text file"""
-    output = open(filename, "w")
+    output = open(filename, "a")
     for acc in acc_ls:
         output.write(str(acc) + "\n")
 

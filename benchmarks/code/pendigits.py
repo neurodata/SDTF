@@ -79,7 +79,7 @@ def experiment_rf():
         # Check memory
         v_m = psutil.virtual_memory()[2]
         v_m_l.append(v_m)
-        n_node = node_count(rf, forest=False)
+        n_node = node_count(rf, forest=True)
         n_node_l.append(n_node)
 
     return rf_l, train_time_l, test_time_l, v_m_l, n_node_l

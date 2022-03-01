@@ -38,7 +38,7 @@ def experiment_dt():
 
         # Test the model
         start_time = time.perf_counter()
-        dt_l.append(prediction(dt))
+        dt_l.append(prediction(dt, X_test, y_test))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
@@ -73,7 +73,7 @@ def experiment_rf():
 
         # Test the model
         start_time = time.perf_counter()
-        rf_l.append(prediction(rf))
+        rf_l.append(prediction(rf, X_test, y_test))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
@@ -158,7 +158,7 @@ def experiment_mf():
 
         # Test the model
         start_time = time.perf_counter()
-        mf_l.append(prediction(mf))
+        mf_l.append(prediction(mf, X_test, y_test))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
@@ -197,7 +197,7 @@ def experiment_sdt():
 
         # Test the model
         start_time = time.perf_counter()
-        sdt_l.append(prediction(sdt))
+        sdt_l.append(prediction(sdt, X_test, y_test))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
@@ -236,7 +236,7 @@ def experiment_sdf():
 
         # Test the model
         start_time = time.perf_counter()
-        sdf_l.append(prediction(sdf))
+        sdf_l.append(prediction(sdf, X_test, y_test))
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 

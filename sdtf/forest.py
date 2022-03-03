@@ -185,25 +185,14 @@ class StreamDecisionForest:
         else:
             n_samples_bootstrap = X.shape[0]
 
-        # Update existing stream decision trees
-        trees = Parallel(n_jobs=self.n_jobs)(
-            delayed(_partial_fit)(
-                tree,
-                X,
-                y,
-                n_samples_bootstrap=n_samples_bootstrap,
-                classes=self.classes_,
-            )
-            for tree in self.estimators_
-        )
         self.n_batches_ += 1
 
         # Calculate probability of swaps
         swap_prob = 1 / self.n_batches_
-        if self.n_batches_ >= 2 and np.random.random() <= swap_prob:
+        if self.n_batches_ > 2 and np.random.random() <= swap_prob:
             # Evaluate forest performance
             results = Parallel(n_jobs=self.n_jobs)(
-                delayed(tree.predict)(X) for tree in trees
+                delayed(tree.predict)(X) for tree in self.estimators_
             )
 
             # Sort predictions by accuracy
@@ -228,8 +217,19 @@ class StreamDecisionForest:
 
             # Swap worst performing trees with new trees
             for i in range(self.n_swaps):
-                trees[acc_l[i][1]] = new_trees[i]
+                self.estimators_[acc_l[i][1]] = new_trees[i]
 
+        # Update existing stream decision trees
+        trees = Parallel(n_jobs=self.n_jobs)(
+            delayed(_partial_fit)(
+                tree,
+                X,
+                y,
+                n_samples_bootstrap=n_samples_bootstrap,
+                classes=self.classes_,
+            )
+            for tree in self.estimators_
+        )
         self.estimators_ = trees
 
         return self

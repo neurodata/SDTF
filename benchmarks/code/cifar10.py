@@ -1,7 +1,6 @@
 """
 Author: Haoyin Xu
 """
-import sys
 import time
 import psutil
 import argparse
@@ -39,7 +38,7 @@ def experiment_dt():
         train_time_l.append(end_time - start_time)
 
         # Check size
-        size = sys.getsizeof(dt)
+        size = clf_size(dt, "../results/dt/temp.pickle")
         size_l.append(size)
 
         # Check memory
@@ -81,7 +80,7 @@ def experiment_rf():
         train_time_l.append(end_time - start_time)
 
         # Check size
-        size = sys.getsizeof(rf)
+        size = clf_size(rf, "../results/rf/temp.pickle")
         size_l.append(size)
 
         # Check memory
@@ -126,7 +125,7 @@ def experiment_ht():
 
         if i > 0 and (i + 1) % 100 == 0:
             # Check size
-            size = sys.getsizeof(ht)
+            size = clf_size(ht, "../results/ht/temp.pickle")
             size_l.append(size)
 
             # Check memory
@@ -180,7 +179,7 @@ def experiment_mf():
         train_time_l.append(end_time - start_time)
 
         # Check size
-        size = sys.getsizeof(mf)
+        size = clf_size(mf, "../results/mf/temp.pickle")
         size_l.append(size)
 
         # Check memory
@@ -226,7 +225,7 @@ def experiment_sdt():
         train_time_l.append(end_time - start_time)
 
         # Check size
-        size = sys.getsizeof(sdt)
+        size = clf_size(sdt, "../results/sdt/temp.pickle")
         size_l.append(size)
 
         # Check memory
@@ -272,7 +271,7 @@ def experiment_sdf():
         train_time_l.append(end_time - start_time)
 
         # Check size
-        size = sys.getsizeof(sdf)
+        size = clf_size(sdf, "../results/sdf/temp.pickle")
         size_l.append(size)
 
         # Check memory
@@ -455,7 +454,14 @@ if args.all or args.sdt:
         X_r = X_train[p]
         y_r = y_train[p]
 
-        sdt_acc, sdt_train_t, sdt_test_t, sdt_v_m, sdt_n_node, sdt_size = experiment_sdt()
+        (
+            sdt_acc,
+            sdt_train_t,
+            sdt_test_t,
+            sdt_v_m,
+            sdt_n_node,
+            sdt_size,
+        ) = experiment_sdt()
         sdt_acc_l.append(sdt_acc)
         sdt_train_t_l.append(sdt_train_t)
         sdt_test_t_l.append(sdt_test_t)
@@ -483,7 +489,14 @@ if args.all or args.sdf:
         X_r = X_train[p]
         y_r = y_train[p]
 
-        sdf_acc, sdf_train_t, sdf_test_t, sdf_v_m, sdf_n_node, sdf_size = experiment_sdf()
+        (
+            sdf_acc,
+            sdf_train_t,
+            sdf_test_t,
+            sdf_v_m,
+            sdf_n_node,
+            sdf_size,
+        ) = experiment_sdf()
         sdf_acc_l.append(sdf_acc)
         sdf_train_t_l.append(sdf_train_t)
         sdf_test_t_l.append(sdf_test_t)

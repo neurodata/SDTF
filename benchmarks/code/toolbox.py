@@ -34,7 +34,7 @@ def node_count(classifier, forest=False):
 
 def clf_size(classifier, file_name):
     """Records the classifier size"""
-    p = pickle.dump(classifier, open(file_name, "w"))
+    p = pickle.dump(classifier, open(file_name, "wb"))
     file_size = os.path.getsize(file_name)
 
     return file_size

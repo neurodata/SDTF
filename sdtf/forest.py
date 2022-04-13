@@ -189,7 +189,7 @@ class StreamDecisionForest:
 
         # Calculate probability of swaps
         swap_prob = 1 / self.n_batches_
-        if self.n_batches_ > 2 and np.random.random() <= swap_prob:
+        if self.n_swaps > 0 and self.n_batches_ > 2 and np.random.random() <= swap_prob:
             # Evaluate forest performance
             results = Parallel(n_jobs=self.n_jobs)(
                 delayed(tree.predict)(X) for tree in self.estimators_

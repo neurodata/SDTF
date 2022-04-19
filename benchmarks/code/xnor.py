@@ -4,14 +4,6 @@ Coauthors: Nick Hahn
 """
 import argparse
 import xor_functions as fn
-import numpy as np
-
-
-def write_result(filename, acc_ls):
-    """Writes results to specified text file"""
-    output = open(filename, "w")
-    for acc in acc_ls:
-        output.write(str(acc) + "\n")
 
 
 # Parse classifier choices

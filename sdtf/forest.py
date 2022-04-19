@@ -77,7 +77,7 @@ class StreamDecisionForest:
 
     Attributes
     ----------
-    forest_ : list of sklearn.tree.DecisionTreeClassifier
+    estimators_ : list of sklearn.tree.DecisionTreeClassifier
         An internal list that contains all
         sklearn.tree.DecisionTreeClassifier.
 
@@ -99,7 +99,7 @@ class StreamDecisionForest:
         max_samples=None,
         n_swaps=1,
     ):
-        self.forest_ = []
+        self.estimators_ = []
         self.n_batches_ = 0
         self.n_estimators = n_estimators
         self.max_features = max_features
@@ -113,7 +113,7 @@ class StreamDecisionForest:
             tree = DecisionTreeClassifier(
                 max_features=self.max_features, splitter=self.splitter
             )
-            self.forest_.append(tree)
+            self.estimators_.append(tree)
 
     def fit(self, X, y, classes=None):
         """
@@ -143,12 +143,12 @@ class StreamDecisionForest:
             self.classes_ = classes
 
         if self.n_batches_ != 0:
-            self.forest_ = []
+            self.estimators_ = []
             for i in range(self.n_estimators):
                 tree = DecisionTreeClassifier(
                     max_features=self.max_features, splitter=self.splitter
                 )
-                self.forest_.append(tree)
+                self.estimators_.append(tree)
             self.n_batches_ = 0
 
         return self.partial_fit(X, y, classes=self.classes_)
@@ -185,25 +185,14 @@ class StreamDecisionForest:
         else:
             n_samples_bootstrap = X.shape[0]
 
-        # Update existing stream decision trees
-        trees = Parallel(n_jobs=self.n_jobs)(
-            delayed(_partial_fit)(
-                tree,
-                X,
-                y,
-                n_samples_bootstrap=n_samples_bootstrap,
-                classes=self.classes_,
-            )
-            for tree in self.forest_
-        )
         self.n_batches_ += 1
 
         # Calculate probability of swaps
         swap_prob = 1 / self.n_batches_
-        if self.n_batches_ >= 2 and np.random.random() <= swap_prob:
+        if self.n_swaps > 0 and self.n_batches_ > 2 and np.random.random() <= swap_prob:
             # Evaluate forest performance
             results = Parallel(n_jobs=self.n_jobs)(
-                delayed(tree.predict)(X) for tree in trees
+                delayed(tree.predict)(X) for tree in self.estimators_
             )
 
             # Sort predictions by accuracy
@@ -228,9 +217,20 @@ class StreamDecisionForest:
 
             # Swap worst performing trees with new trees
             for i in range(self.n_swaps):
-                trees[acc_l[i][1]] = new_trees[i]
+                self.estimators_[acc_l[i][1]] = new_trees[i]
 
-        self.forest_ = trees
+        # Update existing stream decision trees
+        trees = Parallel(n_jobs=self.n_jobs)(
+            delayed(_partial_fit)(
+                tree,
+                X,
+                y,
+                n_samples_bootstrap=n_samples_bootstrap,
+                classes=self.classes_,
+            )
+            for tree in self.estimators_
+        )
+        self.estimators_ = trees
 
         return self
 
@@ -252,7 +252,7 @@ class StreamDecisionForest:
         check_is_fitted(self)
 
         results = Parallel(n_jobs=self.n_jobs)(
-            delayed(tree.predict)(X) for tree in self.forest_
+            delayed(tree.predict)(X) for tree in self.estimators_
         )
 
         major_result = stats.mode(results)[0][0]
@@ -302,7 +302,7 @@ class CascadeStreamForest:
 
     Attributes
     ----------
-    forest_ : list of sklearn.tree.DecisionTreeClassifier
+    estimators_ : list of sklearn.tree.DecisionTreeClassifier
         An internal list that contains cascading
         sklearn.tree.DecisionTreeClassifier.
     """
@@ -316,7 +316,7 @@ class CascadeStreamForest:
         n_jobs=None,
         max_samples=None,
     ):
-        self.forest_ = []
+        self.estimators_ = []
         self.n_estimators = n_estimators
         self.splitter = splitter
         self.max_features = max_features
@@ -386,12 +386,12 @@ class CascadeStreamForest:
             delayed(_partial_fit)(
                 tree, X, y, n_samples_bootstrap=n_samples_bootstrap, classes=classes
             )
-            for tree in self.forest_
+            for tree in self.estimators_
         )
-        self.forest_ = trees
+        self.estimators_ = trees
 
         # Before the maximum number of trees
-        if len(self.forest_) < self.n_estimators:
+        if len(self.estimators_) < self.n_estimators:
             # Add a new decision tree based on new data
             sdt = DecisionTreeClassifier(
                 splitter=self.splitter, max_features=self.max_features
@@ -399,7 +399,7 @@ class CascadeStreamForest:
             _partial_fit(
                 sdt, X, y, n_samples_bootstrap=n_samples_bootstrap, classes=classes
             )
-            self.forest_.append(sdt)
+            self.estimators_.append(sdt)
 
         return self
 
@@ -421,7 +421,7 @@ class CascadeStreamForest:
         check_is_fitted(self)
 
         results = Parallel(n_jobs=self.n_jobs)(
-            delayed(tree.predict)(X) for tree in self.forest_
+            delayed(tree.predict)(X) for tree in self.estimators_
         )
 
         major_result = stats.mode(results)[0][0]

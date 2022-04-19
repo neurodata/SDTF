@@ -9,15 +9,9 @@ import json
 import openml
 from sklearn.model_selection import StratifiedKFold
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
 from sdtf import StreamDecisionForest
 
-
-def prediction(classifier, X_test, y_test):
-    """Generates predictions from model"""
-    y_preds = classifier.predict(X_test)
-
-    return accuracy_score(y_preds, y_test)
+from toolbox import *
 
 
 def experiment_rf(X_train, X_test, y_train, y_test):

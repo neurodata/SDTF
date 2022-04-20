@@ -1,7 +1,6 @@
 wheel
 -r requirements.txt
 cython
-psutil
 river
 #scikit-garden
 openml

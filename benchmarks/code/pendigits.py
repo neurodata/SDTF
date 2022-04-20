@@ -2,7 +2,7 @@
 Author: Haoyin Xu
 """
 import time
-import psutil
+import tracemalloc
 import argparse
 import numpy as np
 import pandas as pd
@@ -21,6 +21,7 @@ def experiment_dt():
     train_time_l = []
     test_time_l = []
     v_m_l = []
+    v_max_l = []
     n_node_l = []
     size_l = []
 
@@ -32,7 +33,14 @@ def experiment_dt():
 
         # Train the model
         start_time = time.perf_counter()
+
+        tracemalloc.start()
+
         dt.fit(X_t, y_t)
+
+        v_m, v_max = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
@@ -41,7 +49,7 @@ def experiment_dt():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_max_l.append(v_max)
         v_m_l.append(v_m)
 
         # Check node counts
@@ -54,7 +62,7 @@ def experiment_dt():
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
-    return dt_l, train_time_l, test_time_l, v_m_l, n_node_l, size_l
+    return dt_l, train_time_l, test_time_l, v_m_l, v_max_l, n_node_l, size_l
 
 
 def experiment_rf():
@@ -63,6 +71,7 @@ def experiment_rf():
     train_time_l = []
     test_time_l = []
     v_m_l = []
+    v_max_l = []
     n_node_l = []
     size_l = []
 
@@ -74,7 +83,14 @@ def experiment_rf():
 
         # Train the model
         start_time = time.perf_counter()
+
+        tracemalloc.start()
+
         rf.fit(X_t, y_t)
+
+        v_m, v_max = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
@@ -83,7 +99,7 @@ def experiment_rf():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_max_l.append(v_max)
         v_m_l.append(v_m)
 
         # Check node counts
@@ -96,7 +112,7 @@ def experiment_rf():
         end_time = time.perf_counter()
         test_time_l.append(end_time - start_time)
 
-    return rf_l, train_time_l, test_time_l, v_m_l, n_node_l, size_l
+    return rf_l, train_time_l, test_time_l, v_m_l, v_max_l, n_node_l, size_l
 
 
 def experiment_ht():
@@ -105,6 +121,7 @@ def experiment_ht():
     train_time_l = []
     test_time_l = []
     v_m_l = []
+    v_max_l = []
     n_node_l = []
     size_l = []
 
@@ -117,8 +134,16 @@ def experiment_ht():
         idx = range(16)
         X_t = dict(zip(idx, X_t))
 
+        # Train the model
         start_time = time.perf_counter()
+
+        tracemalloc.start()
+
         ht.learn_one(X_t, y_t)
+
+        v_m, v_max = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
@@ -128,7 +153,7 @@ def experiment_ht():
             size_l.append(size)
 
             # Check memory
-            v_m = psutil.virtual_memory()[2]
+            v_max_l.append(v_max)
             v_m_l.append(v_m)
 
             # Check node counts
@@ -153,7 +178,7 @@ def experiment_ht():
             new_train_time_l.append(train_time_l[i])
     train_time_l = new_train_time_l
 
-    return ht_l, train_time_l, test_time_l, v_m_l, n_node_l, size_l
+    return ht_l, train_time_l, test_time_l, v_m_l, v_max_l, n_node_l, size_l
 
 
 def experiment_mf():
@@ -162,6 +187,7 @@ def experiment_mf():
     train_time_l = []
     test_time_l = []
     v_m_l = []
+    v_max_l = []
     n_node_l = []
     size_l = []
 
@@ -173,7 +199,14 @@ def experiment_mf():
 
         # Train the model
         start_time = time.perf_counter()
+
+        tracemalloc.start()
+
         mf.partial_fit(X_t, y_t)
+
+        v_m, v_max = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
@@ -182,7 +215,7 @@ def experiment_mf():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_max_l.append(v_max)
         v_m_l.append(v_m)
 
         # Check node counts
@@ -199,7 +232,7 @@ def experiment_mf():
     for i in range(1, 74):
         train_time_l[i] += train_time_l[i - 1]
 
-    return mf_l, train_time_l, test_time_l, v_m_l, n_node_l, size_l
+    return mf_l, train_time_l, test_time_l, v_m_l, v_max_l, n_node_l, size_l
 
 
 def experiment_sdt():
@@ -208,6 +241,7 @@ def experiment_sdt():
     train_time_l = []
     test_time_l = []
     v_m_l = []
+    v_max_l = []
     n_node_l = []
     size_l = []
 
@@ -219,7 +253,14 @@ def experiment_sdt():
 
         # Train the model
         start_time = time.perf_counter()
+
+        tracemalloc.start()
+
         sdt.partial_fit(X_t, y_t, classes=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+        v_m, v_max = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
@@ -228,7 +269,7 @@ def experiment_sdt():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_max_l.append(v_max)
         v_m_l.append(v_m)
 
         # Check node counts
@@ -245,7 +286,7 @@ def experiment_sdt():
     for i in range(1, 74):
         train_time_l[i] += train_time_l[i - 1]
 
-    return sdt_l, train_time_l, test_time_l, v_m_l, n_node_l, size_l
+    return sdt_l, train_time_l, test_time_l, v_m_l, v_max_l, n_node_l, size_l
 
 
 def experiment_sdf():
@@ -254,6 +295,7 @@ def experiment_sdf():
     train_time_l = []
     test_time_l = []
     v_m_l = []
+    v_max_l = []
     n_node_l = []
     size_l = []
 
@@ -265,7 +307,14 @@ def experiment_sdf():
 
         # Train the model
         start_time = time.perf_counter()
+
+        tracemalloc.start()
+
         sdf.partial_fit(X_t, y_t, classes=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+        v_m, v_max = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
         end_time = time.perf_counter()
         train_time_l.append(end_time - start_time)
 
@@ -274,7 +323,7 @@ def experiment_sdf():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_max_l.append(v_max)
         v_m_l.append(v_m)
 
         # Check node counts
@@ -291,7 +340,7 @@ def experiment_sdf():
     for i in range(1, 74):
         train_time_l[i] += train_time_l[i - 1]
 
-    return sdf_l, train_time_l, test_time_l, v_m_l, n_node_l, size_l
+    return sdf_l, train_time_l, test_time_l, v_m_l, v_max_l, n_node_l, size_l
 
 
 # Prepare pendigits data
@@ -321,6 +370,7 @@ if args.all or args.dt:
     dt_train_t_l = []
     dt_test_t_l = []
     dt_v_m_l = []
+    dt_v_max_l = []
     dt_n_node_l = []
     dt_size_l = []
     for i in range(1):
@@ -329,11 +379,20 @@ if args.all or args.dt:
         X_r = p.iloc[:, :-1]
         y_r = p.iloc[:, -1]
 
-        dt_acc, dt_train_t, dt_test_t, dt_v_m, dt_n_node, dt_size = experiment_dt()
+        (
+            dt_acc,
+            dt_train_t,
+            dt_test_t,
+            dt_v_m,
+            dt_v_max,
+            dt_n_node,
+            dt_size,
+        ) = experiment_dt()
         dt_acc_l.append(dt_acc)
         dt_train_t_l.append(dt_train_t)
         dt_test_t_l.append(dt_test_t)
         dt_v_m_l.append(dt_v_m)
+        dt_v_max_l.append(dt_v_max)
         dt_n_node_l.append(dt_n_node)
         dt_size_l.append(dt_size)
 
@@ -341,6 +400,7 @@ if args.all or args.dt:
         write_result("../results/dt/pendigits_train_t.txt", dt_train_t_l)
         write_result("../results/dt/pendigits_test_t.txt", dt_test_t_l)
         write_result("../results/dt/pendigits_v_m.txt", dt_v_m_l)
+        write_result("../results/dt/pendigits_v_max.txt", dt_v_max_l)
         write_result("../results/dt/pendigits_n_node.txt", dt_n_node_l)
         write_result("../results/dt/pendigits_size.txt", dt_size_l)
 
@@ -349,6 +409,7 @@ if args.all or args.rf:
     rf_train_t_l = []
     rf_test_t_l = []
     rf_v_m_l = []
+    rf_v_max_l = []
     rf_n_node_l = []
     rf_size_l = []
     for i in range(1):
@@ -357,11 +418,20 @@ if args.all or args.rf:
         X_r = p.iloc[:, :-1]
         y_r = p.iloc[:, -1]
 
-        rf_acc, rf_train_t, rf_test_t, rf_v_m, rf_n_node, rf_size = experiment_rf()
+        (
+            rf_acc,
+            rf_train_t,
+            rf_test_t,
+            rf_v_m,
+            rf_v_max,
+            rf_n_node,
+            rf_size,
+        ) = experiment_rf()
         rf_acc_l.append(rf_acc)
         rf_train_t_l.append(rf_train_t)
         rf_test_t_l.append(rf_test_t)
         rf_v_m_l.append(rf_v_m)
+        rf_v_max_l.append(rf_v_max)
         rf_n_node_l.append(rf_n_node)
         rf_size_l.append(rf_size)
 
@@ -369,6 +439,7 @@ if args.all or args.rf:
         write_result("../results/rf/pendigits_train_t.txt", rf_train_t_l)
         write_result("../results/rf/pendigits_test_t.txt", rf_test_t_l)
         write_result("../results/rf/pendigits_v_m.txt", rf_v_m_l)
+        write_result("../results/rf/pendigits_v_max.txt", rf_v_max_l)
         write_result("../results/rf/pendigits_n_node.txt", rf_n_node_l)
         write_result("../results/rf/pendigits_size.txt", rf_size_l)
 
@@ -377,6 +448,7 @@ if args.all or args.ht:
     ht_train_t_l = []
     ht_test_t_l = []
     ht_v_m_l = []
+    ht_v_max_l = []
     ht_n_node_l = []
     ht_size_l = []
     for i in range(1):
@@ -385,11 +457,20 @@ if args.all or args.ht:
         X_r = p.iloc[:, :-1]
         y_r = p.iloc[:, -1]
 
-        ht_acc, ht_train_t, ht_test_t, ht_v_m, ht_n_node, ht_size = experiment_ht()
+        (
+            ht_acc,
+            ht_train_t,
+            ht_test_t,
+            ht_v_m,
+            ht_v_max,
+            ht_n_node,
+            ht_size,
+        ) = experiment_ht()
         ht_acc_l.append(ht_acc)
         ht_train_t_l.append(ht_train_t)
         ht_test_t_l.append(ht_test_t)
         ht_v_m_l.append(ht_v_m)
+        ht_v_max_l.append(ht_v_max)
         ht_n_node_l.append(ht_n_node)
         ht_size_l.append(ht_size)
 
@@ -397,6 +478,7 @@ if args.all or args.ht:
         write_result("../results/ht/pendigits_train_t.txt", ht_train_t_l)
         write_result("../results/ht/pendigits_test_t.txt", ht_test_t_l)
         write_result("../results/ht/pendigits_v_m.txt", ht_v_m_l)
+        write_result("../results/ht/pendigits_v_max.txt", ht_v_max_l)
         write_result("../results/ht/pendigits_n_node.txt", ht_n_node_l)
         write_result("../results/ht/pendigits_size.txt", ht_size_l)
 
@@ -405,6 +487,7 @@ if args.all or args.mf:
     mf_train_t_l = []
     mf_test_t_l = []
     mf_v_m_l = []
+    mf_v_max_l = []
     mf_n_node_l = []
     mf_size_l = []
     for i in range(1):
@@ -413,11 +496,20 @@ if args.all or args.mf:
         X_r = p.iloc[:, :-1]
         y_r = p.iloc[:, -1]
 
-        mf_acc, mf_train_t, mf_test_t, mf_v_m, mf_n_node, mf_size = experiment_mf()
+        (
+            mf_acc,
+            mf_train_t,
+            mf_test_t,
+            mf_v_m,
+            mf_v_max,
+            mf_n_node,
+            mf_size,
+        ) = experiment_mf()
         mf_acc_l.append(mf_acc)
         mf_train_t_l.append(mf_train_t)
         mf_test_t_l.append(mf_test_t)
         mf_v_m_l.append(mf_v_m)
+        mf_v_max_l.append(mf_v_max)
         mf_n_node_l.append(mf_n_node)
         mf_size_l.append(mf_size)
 
@@ -425,6 +517,7 @@ if args.all or args.mf:
         write_result("../results/mf/pendigits_train_t.txt", mf_train_t_l)
         write_result("../results/mf/pendigits_test_t.txt", mf_test_t_l)
         write_result("../results/mf/pendigits_v_m.txt", mf_v_m_l)
+        write_result("../results/mf/pendigits_v_max.txt", mf_v_max_l)
         write_result("../results/mf/pendigits_n_node.txt", mf_n_node_l)
         write_result("../results/mf/pendigits_size.txt", mf_size_l)
 
@@ -433,6 +526,7 @@ if args.all or args.sdt:
     sdt_train_t_l = []
     sdt_test_t_l = []
     sdt_v_m_l = []
+    sdt_v_max_l = []
     sdt_n_node_l = []
     sdt_size_l = []
     for i in range(1):
@@ -446,6 +540,7 @@ if args.all or args.sdt:
             sdt_train_t,
             sdt_test_t,
             sdt_v_m,
+            sdt_v_max,
             sdt_n_node,
             sdt_size,
         ) = experiment_sdt()
@@ -453,6 +548,7 @@ if args.all or args.sdt:
         sdt_train_t_l.append(sdt_train_t)
         sdt_test_t_l.append(sdt_test_t)
         sdt_v_m_l.append(sdt_v_m)
+        sdt_v_max_l.append(sdt_v_max)
         sdt_n_node_l.append(sdt_n_node)
         sdt_size_l.append(sdt_size)
 
@@ -460,6 +556,7 @@ if args.all or args.sdt:
         write_result("../results/sdt/pendigits_train_t.txt", sdt_train_t_l)
         write_result("../results/sdt/pendigits_test_t.txt", sdt_test_t_l)
         write_result("../results/sdt/pendigits_v_m.txt", sdt_v_m_l)
+        write_result("../results/sdt/pendigits_v_max.txt", sdt_v_max_l)
         write_result("../results/sdt/pendigits_n_node.txt", sdt_n_node_l)
         write_result("../results/sdt/pendigits_size.txt", sdt_size_l)
 
@@ -468,6 +565,7 @@ if args.all or args.sdf:
     sdf_train_t_l = []
     sdf_test_t_l = []
     sdf_v_m_l = []
+    sdf_v_max_l = []
     sdf_n_node_l = []
     sdf_size_l = []
     for i in range(1):
@@ -481,6 +579,7 @@ if args.all or args.sdf:
             sdf_train_t,
             sdf_test_t,
             sdf_v_m,
+            sdf_v_max,
             sdf_n_node,
             sdf_size,
         ) = experiment_sdf()
@@ -488,6 +587,7 @@ if args.all or args.sdf:
         sdf_train_t_l.append(sdf_train_t)
         sdf_test_t_l.append(sdf_test_t)
         sdf_v_m_l.append(sdf_v_m)
+        sdf_v_max_l.append(sdf_v_max)
         sdf_n_node_l.append(sdf_n_node)
         sdf_size_l.append(sdf_size)
 
@@ -495,5 +595,6 @@ if args.all or args.sdf:
         write_result("../results/sdf/pendigits_train_t.txt", sdf_train_t_l)
         write_result("../results/sdf/pendigits_test_t.txt", sdf_test_t_l)
         write_result("../results/sdf/pendigits_v_m.txt", sdf_v_m_l)
+        write_result("../results/sdf/pendigits_v_max.txt", sdf_v_max_l)
         write_result("../results/sdf/pendigits_n_node.txt", sdf_n_node_l)
         write_result("../results/sdf/pendigits_size.txt", sdf_size_l)

@@ -22,6 +22,7 @@ def write_result(filename, acc_ls, tuple=False):
             first.write(str(np.array(acc)[:, 0]) + "\n")
             second.write(str(np.array(acc)[:, 1]) + "\n")
 
+
 def prediction(classifier, X_test, y_test):
     """Generates predictions from model"""
     y_preds = classifier.predict(X_test)

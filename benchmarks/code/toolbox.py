@@ -19,8 +19,8 @@ def write_result(filename, acc_ls, tuple=False):
         first = open(filename + "_first.txt", "a")
         second = open(filename + "_second.txt", "a")
         for acc in acc_ls:
-            first.write(str(np.array(acc)[:, 0]) + "\n")
-            second.write(str(np.array(acc)[:, 1]) + "\n")
+            first.write(str(np.array(acc)[:, 0].tolist()) + "\n")
+            second.write(str(np.array(acc)[:, 1].tolist()) + "\n")
 
 
 def prediction(classifier, X_test, y_test):

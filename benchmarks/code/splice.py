@@ -4,7 +4,6 @@ Author: Haoyin Xu
 import time
 import psutil
 import argparse
-import numpy as np
 from numpy.random import permutation
 import openml
 from sklearn.model_selection import train_test_split
@@ -43,7 +42,10 @@ def experiment_dt():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_m = (
+            psutil.virtual_memory()[0] / 1024 / 1024 / 1024
+            - psutil.virtual_memory()[1] / 1024 / 1024 / 1024
+        )
         v_m_l.append(v_m)
 
         # Check node counts
@@ -85,7 +87,10 @@ def experiment_rf():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_m = (
+            psutil.virtual_memory()[0] / 1024 / 1024 / 1024
+            - psutil.virtual_memory()[1] / 1024 / 1024 / 1024
+        )
         v_m_l.append(v_m)
 
         # Check node counts
@@ -130,7 +135,10 @@ def experiment_ht():
             size_l.append(size)
 
             # Check memory
-            v_m = psutil.virtual_memory()[2]
+            v_m = (
+                psutil.virtual_memory()[0] / 1024 / 1024 / 1024
+                - psutil.virtual_memory()[1] / 1024 / 1024 / 1024
+            )
             v_m_l.append(v_m)
 
             # Check node counts
@@ -184,7 +192,10 @@ def experiment_mf():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_m = (
+            psutil.virtual_memory()[0] / 1024 / 1024 / 1024
+            - psutil.virtual_memory()[1] / 1024 / 1024 / 1024
+        )
         v_m_l.append(v_m)
 
         # Check node counts
@@ -230,7 +241,10 @@ def experiment_sdt():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_m = (
+            psutil.virtual_memory()[0] / 1024 / 1024 / 1024
+            - psutil.virtual_memory()[1] / 1024 / 1024 / 1024
+        )
         v_m_l.append(v_m)
 
         # Check node counts
@@ -276,7 +290,10 @@ def experiment_sdf():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_m = (
+            psutil.virtual_memory()[0] / 1024 / 1024 / 1024
+            - psutil.virtual_memory()[1] / 1024 / 1024 / 1024
+        )
         v_m_l.append(v_m)
 
         # Check node counts
@@ -345,7 +362,7 @@ if args.all or args.dt:
         write_result("../results/dt/splice_test_t.txt", dt_test_t_l)
         write_result("../results/dt/splice_v_m.txt", dt_v_m_l)
         write_result("../results/dt/splice_n_node.txt", dt_n_node_l)
-        write_result("../results/dt/splice_size.txt", dt_size_l)
+        write_result("../results/dt/splice_size.txt", dt_size_l, True)
 
 if args.all or args.rf:
     rf_acc_l = []
@@ -373,7 +390,7 @@ if args.all or args.rf:
         write_result("../results/rf/splice_test_t.txt", rf_test_t_l)
         write_result("../results/rf/splice_v_m.txt", rf_v_m_l)
         write_result("../results/rf/splice_n_node.txt", rf_n_node_l)
-        write_result("../results/rf/splice_size.txt", rf_size_l)
+        write_result("../results/rf/splice_size.txt", rf_size_l, True)
 
 if args.all or args.ht:
     ht_acc_l = []
@@ -401,7 +418,7 @@ if args.all or args.ht:
         write_result("../results/ht/splice_test_t.txt", ht_test_t_l)
         write_result("../results/ht/splice_v_m.txt", ht_v_m_l)
         write_result("../results/ht/splice_n_node.txt", ht_n_node_l)
-        write_result("../results/ht/splice_size.txt", ht_size_l)
+        write_result("../results/ht/splice_size.txt", ht_size_l, True)
 
 if args.all or args.mf:
     mf_acc_l = []
@@ -429,7 +446,7 @@ if args.all or args.mf:
         write_result("../results/mf/splice_test_t.txt", mf_test_t_l)
         write_result("../results/mf/splice_v_m.txt", mf_v_m_l)
         write_result("../results/mf/splice_n_node.txt", mf_n_node_l)
-        write_result("../results/mf/splice_size.txt", mf_size_l)
+        write_result("../results/mf/splice_size.txt", mf_size_l, True)
 
 if args.all or args.sdt:
     sdt_acc_l = []
@@ -464,7 +481,7 @@ if args.all or args.sdt:
         write_result("../results/sdt/splice_test_t.txt", sdt_test_t_l)
         write_result("../results/sdt/splice_v_m.txt", sdt_v_m_l)
         write_result("../results/sdt/splice_n_node.txt", sdt_n_node_l)
-        write_result("../results/sdt/splice_size.txt", sdt_size_l)
+        write_result("../results/sdt/splice_size.txt", sdt_size_l, True)
 
 if args.all or args.sdf:
     sdf_acc_l = []
@@ -499,4 +516,4 @@ if args.all or args.sdf:
         write_result("../results/sdf/splice_test_t.txt", sdf_test_t_l)
         write_result("../results/sdf/splice_v_m.txt", sdf_v_m_l)
         write_result("../results/sdf/splice_n_node.txt", sdf_n_node_l)
-        write_result("../results/sdf/splice_size.txt", sdf_size_l)
+        write_result("../results/sdf/splice_size.txt", sdf_size_l, True)

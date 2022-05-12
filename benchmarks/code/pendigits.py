@@ -42,8 +42,8 @@ def experiment_dt():
 
         # Check memory
         v_m = (
-            psutil.virtual_memory()[0] / 1024 / 1024 / 1024
-            - psutil.virtual_memory()[1] / 1024 / 1024 / 1024
+            p.memory_full_info().rss / 1024 / 1024 / 1024,
+            p.memory_full_info().vms / 1024 / 1024 / 1024,
         )
         v_m_l.append(v_m)
 

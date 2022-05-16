@@ -378,7 +378,7 @@ if args.all or args.dt:
         write_result("../results/dt/cifar10_test_t", dt_test_t_l)
         write_result("../results/dt/cifar10_v_m", dt_v_m_l, True)
         write_result("../results/dt/cifar10_n_node", dt_n_node_l)
-        write_result("../results/dt/cifar10_size", dt_n_size_l, True)
+        write_result("../results/dt/cifar10_size", dt_size_l, True)
 
 if args.all or args.rf:
     rf_acc_l = []

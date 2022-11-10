@@ -1,11 +1,11 @@
 \begin{abstract}
 Decision forests, including random forests and gradient boosting trees, remain the leading machine learning methods for many real-world data problems, specifically on tabular data.
 However, current standard implementations only operate in batch mode, and therefore cannot incrementally update when more data arrive. 
-Several previous works developed streaming trees and ensembles to overcome this limitation. Nonetheless, we found that those state-of-the-art algorithms suffer from a number of drawbacks, including performing very poorly on some problems and requiring a huge amount of memory on others. 
+Several previous works developed streaming trees and ensembles to overcome this limitation. Nonetheless, we found that those state-of-the-art algorithms suffer from a number of drawbacks, including poor performance on some problems and high memory usage on others. 
 We therefore developed the simplest possible extension of decision trees we could think of: given new data, simply update existing trees by continuing to grow them, and replace some old trees with new ones to control the total number of trees. 
 On three standard datasets, we illustrate that our approach, \textit{Stream Decision Forest} (SDF), does not suffer from either of the aforementioned limitations. 
 In a benchmark suite containing 72 classification problems (the OpenML-CC18 data suite), we illustrate that our approach often performs as well, and sometimes better even, than the batch mode decision forest algorithm. 
-Thus, we believe SDFs establish a simple standard for streaming trees and forests that could readily be applied to many real-world problems, including those with distribution drift and continual learning.
+Thus, SDFs establish a simple standard for streaming trees and forests that could readily be applied to many real-world problems, including those with distribution drift and continual learning.
 \end{abstract}
 
 \section{Introduction}
@@ -13,20 +13,27 @@ Thus, we believe SDFs establish a simple standard for streaming trees and forest
 In recent decades, machine learning methods facilitate the utilization of modern data and make scientific progress in health care, technology, commerce, and more \citep{jordan_machine_2015}. 
 Among those methods, random forests, hereafter referred to as decision forests (DFs), and gradient boosting trees are the leading strategies for batch tasks like classifications, outperforming all others on real-world datasets and machine learning competitions \citep{breiman_random_2001, caruana_empirical_2006, caruana_empirical_2008, fernandez-delgado_we_2014, chen_xgboost_2016}.
 However, training forests with continuous inputs poses new challenges for these estimators.
-Larger sample sizes often require overwhelmingly more computational time and space, and different scenarios of streaming inputs would need flexible strategies for model updates \citep{liu_isolation_2008, abdulsalam_streaming_2007}. This condition means that, for batch tree estimators like DFs, all available sample data must be stored, and refitting everything is needed for each update \citep{amit_shape_1997, breiman_random_2001}. Even with enough computational resources to do so, out-of-distribution (OOD) problems could still undermine the validity of older data \citep{geisa_towards_2021}. Moreover, learning scenarios like continual learning involve data from multiple tasks, representing a particular challenge for batch models \citep{van_de_ven_three_2019}.
+Larger sample sizes often require overwhelmingly more computational time and space, and different scenarios of streaming inputs would need flexible strategies for model updates \citep{liu_isolation_2008, abdulsalam_streaming_2007}. This condition requires that, for batch tree estimators like DFs, all available sample data must be stored, and refitting everything is needed for each update \citep{amit_shape_1997, breiman_random_2001}. Even with enough computational resources to do so, out-of-distribution (OOD) problems could still undermine the validity of older data \citep{geisa_towards_2021}. Moreover, learning scenarios like continual learning involve data from multiple tasks, representing a particular challenge for batch models \citep{van_de_ven_three_2019}.
 
 By incrementally updating the estimators with indefinite batches of new training samples, streaming trees can continuously optimize the tree structures without storing old data \citep{domingos_mining_2000, bifet_adaptive_2009, lakshminarayanan_mondrian_2014, ben-haim_streaming_2010}. Furthermore, in forest ensembles, older trees could be pruned to keep up with the current data distribution. Attempts have been made to adapt decision trees (DTs) to streaming tasks, including Hoeffding trees (HTs) and Mondrian forests (MFs) \citep{domingos_mining_2000, lakshminarayanan_mondrian_2014}. These two state-of-the-art algorithms have been tested in many synthetic and real-world scenarios \citep{pfahringer_new_2007, gomes_machine_2019, lakshminarayanan_mondrian_2016, khannouz_benchmark_2020}. Nonetheless, we find them performing poorly in certain tasks and using excessive memories on large datasets, which significantly restrict their applications.
 
 In this paper, we explore the simplest incremental update method to extend a fitted decision tree and introduce our streaming tree implementations: \textit{Stream Decision Tree} (SDT) and \textit{Stream Decision Forest} (SDF).
-After the initial fitting, an SDT takes in every new batch of training samples and splits its leaf nodes when the criteria are met. SDFs ensemble SDTs with bootstrapping and replace old trees with new ones to control the total number of estimators. 
+After the initial fitting, an SDT takes in every new batch of training samples and splits its leaf nodes when the given criteria are met. SDFs ensemble SDTs with bootstrapping and replace old trees with new ones to control the total number of estimators. 
 On three standard datasets with varying complexities, the performance of streaming and batch estimators are compared, and we illustrate the consistently high performance of SDFs without the aforementioned limitations of HTs and MFs. Then in the OpenML-CC18 benchmark suite,
 % \footnote{\url{https://www.openml.org/s/99}} 
-which contains 72 diverse classification tasks, we demonstrate that SDFs often achieve accuracy similar to, sometimes even better than, those of batch mode DFs \citep{vanschoren_openml_2013, bischl_openml_2019}. Overall, we believe our simplest approach to streaming trees could be readily applied to many real-world problems, including OOD problems and continual learning \citep{geisa_towards_2021, van_de_ven_three_2019}.
+which contains 72 diverse classification tasks, we demonstrate that SDFs often achieve accuracy similar to, or even better than, those of batch mode DFs \citep{vanschoren_openml_2013, bischl_openml_2019}. Overall, we believe our simplest approach to streaming trees could be readily applied to many real-world problems, including OOD problems and continual learning \citep{geisa_towards_2021, van_de_ven_three_2019}.
 
 \section{Methods} 
 \label{methods}
-
 \subsection{Streaming Trees}
+SDTs are based on a fork
+% \footnote{\url{https://github.com/PSSF23/scikit-learn-stream}} 
+of the scikit-learn python package (BSD-3-Clause), which we customized by adding a new \texttt{partial\_fit} function to the \texttt{DecisionTreeClassifier} for extending fitted trees \citep{pedregosa_scikit-learn_2011}. Thus, an SDT is initialized almost in the same way as a DT, where the tree is fitted to the first batch of training samples. The only difference is the input of predefined class labels, as the first batch might not include all possible classes. 
+For each incremental update afterwards (Algorithm \ref{alg:sdt}), the SDT takes in one batch of training samples: $\mathcal{D}_n = (\mathbf{x},\mathbf{y}) \in \mathbb{R}^{n \times p} \times \{1,\ldots, K\}^n$. 
+Then for every training sample $x_i$ in the batch, the algorithm locates the leaf node it would fall into and associates the node with the sample. All the leaf nodes found in such a manner are marked as ``false roots.'' 
+These ``false roots'' are then split and extended if satisfying the prespecified splitting criteria (e.g. a minimum node sample size of two). 
+If the splitting occurs, both child nodes would be recursively marked as ``false roots'' and associated with their separate training samples, just like how batch splitting works in DTs. If not fulfilling the splitting criteria, the ``false roots'' would become the new leaf nodes. Figure \ref{fig:iris} shows an example of SDT structures on the Iris dataset \citep{fisher_uci_1988}. Two random batches of 25 samples were used.
+
 \begin{algorithm}[!htb]
 \caption{Incrementally update a decision tree with a batch of training samples.}
 \label{alg:sdt}
@@ -49,6 +56,7 @@ $T$ \Comment{updated tree}
 \For{both child nodes}
 \State mark as ``false roots''
 \EndFor 
+\State mark the node as internal or leaf
 \EndFor
 \State \Return $T$
 \EndFunction 
@@ -75,7 +83,7 @@ $T$ \Comment{updated tree}
 \Ensure
 $\mathbf{T}$ \Comment{updated forest}
 \Function{SDF.update\_forest}{$\mathbf{T},\mathbf{x},\mathbf{y},r$}
-\For{each each tree in the forest}
+\For{each tree in the forest}
 \State resample ($\mathbf{x},\mathbf{y}$) with bootstrapping
 \State limit the number of features used for splitting
 \State update the tree with resampled data 
@@ -88,7 +96,7 @@ with $1/b$ probability:
 \For{each $i \in [r]$}
 \State resample ($\mathbf{x},\mathbf{y}$) with bootstrapping
 \State create a new tree with resampled data
-\State replace an old tree with the new tree 
+\State replace the $i$-th worst tree with the new tree 
 \EndFor
 \EndIf
 \State \Return $\mathbf{T}$
@@ -96,24 +104,15 @@ with $1/b$ probability:
 \end{algorithmic}
 \end{algorithm}
 
-SDTs are based on a fork
-% \footnote{\url{https://github.com/PSSF23/scikit-learn-stream}} 
-of the scikit-learn python package (BSD-3-Clause), which we customized by adding a new \texttt{partial\_fit} function to the \texttt{DecisionTreeClassifier} for extending fitted trees \citep{pedregosa_scikit-learn_2011}. Thus, an SDT is initialized almost in the same way as a DT, where the tree is fitted to the first batch of training samples. The only difference is the input of predefined class labels, as the first batch might not include all possible classes. 
-For each incremental update afterwards (Algorithm \ref{alg:sdt}), the SDT takes in one batch of training samples: $\mathcal{D}_n = (\mathbf{x},\mathbf{y}) \in \mathbb{R}^{n \times p} \times \{1,\ldots, K\}^n$. 
-Then for every training sample $x_i$ in the batch, the algorithm locates the leaf node it would fall into and associates the node with the sample. All the leaf nodes found in such a manner are marked as ``false roots.'' 
-These ``false roots'' are then split and extended if satisfying the prespecified splitting criteria (e.g. a minimum node sample size of two). 
-If the splitting occurs, both child nodes would be recursively marked as ``false roots'' and associated with their separate training samples, just like how batch splitting works in DTs. If not fulfilling the splitting criteria, the ``false roots'' would become the new leaf nodes. Figure \ref{fig:iris} shows an example of SDT structures on the Iris dataset \citep{fisher_uci_1988}. Two random batches of 25 samples were used.
-
-An SDF, defined as \texttt{StreamDecisionForest} on our website,\footnote{\url{https://sdtf.neurodata.io}}
-% and GitHub,\footnote{\url{https://github.com/neurodata/SDTF}}
-is initialized as a collection of SDTs (100 by default) and modeled after scikit-learn's DF implementation: \texttt{RandomForestClassifier} \citep{pedregosa_scikit-learn_2011}. As in Algorithm \ref{alg:sdf}, it incrementally updates the trees by bootstrapping the training batches and limiting the number of features selected per split (``max\_features''). The default ``max\_features'' is defined as $\sqrt{d}$, where $d$ is the total number of features. After each incremental update, with $1/b$ probability, where $b$ is the number of batches seen, the forest replaces its worst performing trees (one tree by default) with new trees fitted only to the current batch. We include the probability aspect to uniformly sample over the training sets and thus minimize the bias towards the most recent data. This step removes SDTs that are negatively affected by earlier partitions and reduces the computational space taken. All predictions are generated via majority voting, which helps improving the ensemble's consistency \citep{liaw_classification_2002, biau_consistency_2008, breiman_random_2001}. Furthermore, the algorithm uses the joblib python package (BSD-3-Clause) and takes advantage of parallel computing \citep{joblib_developers_joblibjoblib_2022}.
+An SDF, defined as \texttt{StreamDecisionForest} on our website\footnote{\url{https://sdtf.neurodata.io}} and GitHub repository,\footnote{\url{https://github.com/neurodata/SDTF}}
+is initialized as a collection of SDTs (100 by default) and modeled after scikit-learn's DF implementation: \texttt{RandomForestClassifier} \citep{pedregosa_scikit-learn_2011}. As in Algorithm \ref{alg:sdf}, it incrementally updates the trees by bootstrapping the training batches and limiting the number of features selected per split (``max\_features''). The default ``max\_features'' is defined as $p=\sqrt{d}$, where $d$ is the total number of features. After each incremental update, with $1/b$ probability, where $b$ is the number of batches seen, the forest replaces its worst performing trees (one tree by default) with new trees fitted only to the current batch. We include the probability aspect to uniformly sample over the training sets and thus minimize the bias towards the most recent data. This step removes SDTs that are negatively affected by earlier partitions and reduces the computational space taken. All predictions are generated via majority voting, which helps improving the ensemble's consistency \citep{liaw_classification_2002, biau_consistency_2008, breiman_random_2001}. Furthermore, the algorithm uses the joblib python package (BSD-3-Clause) and takes advantage of parallel computing \citep{joblib_developers_joblibjoblib_2022}.
 
 In all benchmarks, we incrementally updated SDTs and SDFs with fixed-sized training batches (100 random samples per batch) and measured their performance on separated test sets.
 
 \subsection{Reference Algorithms}
 For comparison with state-of-the-art streaming tree algorithms, we experimented with two existing estimators: Hoeffding trees and Mondrian forests \citep{domingos_mining_2000, lakshminarayanan_mondrian_2014, khannouz_benchmark_2020, pfahringer_new_2007, gomes_machine_2019, lakshminarayanan_mondrian_2016}. 
 
-HTs, also known as VFDTs (Very Fast Decision Trees), are designed to grow tree learners incrementally using Hoeffding bounds \citep{domingos_mining_2000, hoeffding_probability_1994}. 
+HTs are designed to grow tree learners incrementally using Hoeffding bounds \citep{domingos_mining_2000, hoeffding_probability_1994}. 
 After observing $n$ samples within range $R$, the bound states that, with $1 - \delta$ probability, the variable's true mean is no smaller than the sample mean minus $\epsilon$, where 
 \begin{equation*} \epsilon=\sqrt{\frac{R^2\ln(\delta^{-1})}{2n}} \tag{1} \end{equation*}
 Thus, the algorithm's robustness is determined by specifying the $\delta$ value.
@@ -135,7 +134,7 @@ We used \texttt{MondrianForestClassifier} from the scikit-garden python package 
 
 For comparison with batch tree estimators, we included batch decision trees and decision forests \citep{breiman_random_2001}. An DF contains a collection of DTs (100 by default) and uses bootstrapping to resample the training data. Each tree in the forest limits the number of features selected at each node split (``max\_features'') and tries to find the best partitions available \citep{breiman_random_2001}.
 With majority voting as predictions, a DF is non-parametric and universally consistent, so it will approach Bayes optimal performance with sufficiently large sample sizes, tree depths, and number of trees \citep{liaw_classification_2002, biau_consistency_2008}.
-Implementations for both algorithms were from the scikit-learn package: \texttt{DecisionTreeClassifier} and \texttt{RandomForestClassifier} \citep{pedregosa_scikit-learn_2011}. All hyperparameters were kept as default.
+Implementations for both algorithms were from the scikit-learn package: \texttt{DecisionTreeClassifier} and \texttt{RandomForestClassifier} \citep{pedregosa_scikit-learn_2011}. All hyperparameters were kept as default except the number of trees.
 
 In all tasks, we incrementally updated HTs and MFs with fixed-sized data batches (100 random samples per batch). At each sample size, DTs and DFs were trained with all available data, including current and previous batches. 
 
@@ -144,7 +143,7 @@ We selected three standard datasets (Table \ref{table:data}) for experiments: Sp
 
 For the Splice dataset, we randomly reserved 25\% of all genetic sequences for testing \citep{rampone_splice-junction_1998, sarkar_splice_2020}. Each sequence contains 60 nucleotide codes, which are converted into numerical features by the OpenML curation \citep{feurer_openml-python_2019}. This task tests MFs' performance on DNA data without feature engineering, which was not satisfactory in the original paper \cite{lakshminarayanan_mondrian_2014}. 
 The Pendigits dataset contains handwritten images represented by 16 pixel features, which are generated through spatial resampling \citep{alimoglu_methods_1996}.
-The CIFAR-10 dataset contains RGB-colored images, each high-dimensional image represented by $32 \times 32 \times 3 = 3,072$ pixel features. We used the provided training and test sets for Pendigits and CIFAR-10, and ran the three tasks 10 times by randomizing the training sets. 
+The CIFAR-10 dataset contains RGB-colored images, each high-dimensional image represented by $32 \times 32 \times 3 = 3,072$ pixel features. We used the provided training and test sets for Pendigits and CIFAR-10, and ran each of the three tasks 10 times by randomizing the training sets. 
 % Excessive memory requirements of MFs prevented us from conducting cross validations.
 
 \begin{table}[htb]
@@ -166,24 +165,24 @@ Dataset & \textbf{Splice} & \textbf{Pendigits} & \textbf{CIFAR-10} \\
 \label{table:data}
 \end{table}
 
-We also used the OpenML-CC18 data suite\footnote{\url{https://www.openml.org/s/99}} for further benchmarks on SDFs and DFs. It represents a collection of 72 real-world datasets organized by OpenML and functions as a comprehensive benchmark suite \citep{vanschoren_openml_2013, bischl_openml_2019}. These datasets vary in sample size, feature space, and unique target classes.
+We also used the OpenML-CC18 data suite\footnote{\url{https://www.openml.org/s/99}} for further benchmarks on SDFs and DFs. It represents a collection of 72 real-world datasets organized by OpenML, functioning as a comprehensive benchmark suite \citep{vanschoren_openml_2013, bischl_openml_2019}. These datasets vary in sample size, feature space, and unique target classes.
 About half of the tasks are binary classifications, and the other half are multiclass classifications with up to 50 classes. The range of total sample sizes is between 500 and 100,000, while the range of features is from a few to a few thousand \citep{bischl_openml_2019}.
 Datasets were imported using the OpenML-Python package (BSD-3-Clause) \citep{feurer_openml-python_2019}. In the OpenML-CC18 tasks, We used all available samples and ran 5-fold cross validations with SDFs and DFs.
 
 \subsection{Evaluation Metrics}
-Classifier performance is evaluated by classification accuracy, virtual memories, and training wall times. 
-On the three selected datasets, we use the psutil python package (BSD-3-Clause) to measure memory usage from the first repetitions
+Classifier performance is evaluated by classification accuracy, classifier size, maximum training space, and training wall times. 
+On the three selected datasets, we use the psutil python package (BSD-3-Clause) to measure memory usage for all the repetitions
 % , which doesn't account for pinned and anonymous pages 
 \citep{rodola_giampaolopsutil_2022}.
-The training wall times calculate the fitting times for the given model without hyperparameter tuning (Appendix \ref{app:select_time}). All estimators' times are calculated by accumulating the training times of data batches, which account for batch estimators' refitting. We do not report any error bars as they are uninformative. 
+The training wall times calculate the fitting times for the given model without hyperparameter tuning (Appendix \ref{app:select_time}). All estimators' times are calculated by accumulating the training times of data batches, which account for batch estimators' refitting. We do not report any error bars as they are minimal. 
 To accommodate the space and time constraints of MFs and HTs, the three selected tasks were run without parallelization on a Microsoft Azure 6-core (Intel Xeon E5-2690 v3) Standard\_NC6 instance with 56 GB memory and 340 GB SSD storage.
 The OpenML-CC18 experiments were run with parallelization on a Microsoft Azure 4-core (Intel Xeon E5-2673 v4) Standard\_D4\_v3 instance with 16 GB memory and 100 GB SSD storage.
 
 \begin{figure*}[!htb]
 \centering
 \includegraphics[width=0.9\textwidth]{select_acc_stream}
-  \caption{Multiclass classifications on the Splice \textbf{(left)}, Pendigits \textbf{(center)}, and CIFAR-10 \textbf{(right)} datasets. The classifiers include: Stream Decision Forest \textbf{(SDF)}, Stream Decision Tree \textbf{(SDT)}, Hoeffding Tree \textbf{(HT)}, and Mondrian Forest \textbf{(MF)}. 
-  Each line represents averaged results from 10 randomized repetitions. The shaded regions highlight the 25th through 75th percentiles. SDFs perform better than all other streaming estimators on the Splice and CIFAR-10 datasets. They also perform very similarly to MFs in the Pendigits task. The performance of HTs either remains almost constant or experiences significant fluctuations. Especially in the Pendigits task, the accuracy drops continuously from around 4,000 samples to about 6,000 samples. MFs perform well in the Pendigits task, but their accuracy significantly drops in the Splice task, only surpassing that of HTs.
+  \caption{Multiclass classifications on the Splice \textbf{(left)}, Pendigits \textbf{(center)}, and CIFAR-10 \textbf{(right)} datasets. The classifiers include: Stream Decision Forest with 100 trees \textbf{(SDF-100T)} and 10 trees \textbf{(SDF-10T)}, Stream Decision Tree \textbf{(SDT)}, Hoeffding Tree \textbf{(HT)}, and Mondrian Forest \textbf{(MF)}. 
+  Each line represents averaged results from 10 randomized repetitions. The shaded regions highlight the 25th through 75th percentiles. SDFs perform better than all other streaming estimators on the Splice and CIFAR-10 datasets. They also perform very similarly to MFs in the Pendigits task. The performance of HTs either remains almost constant or experiences significant fluctuations. Their accuracy after certain sample sizes becomes unreliable, possibly due to the package's implementation errors. Those results are not shown, and the sample sizes are marked with the \textbf{star symbol}. MFs perform slightly better than SDFs in the Pendigits task, but their accuracy significantly drops in the Splice task, only surpassing that of HTs.
   }
 \label{fig:select_acc_stream}
 \end{figure*}
@@ -193,34 +192,43 @@ The OpenML-CC18 experiments were run with parallelization on a Microsoft Azure 4
 
 \subsection{Comparisons with Streaming Algorithms}
 \label{results:stream}
-SDFs achieve consistently high accuracy across all sample sizes and classification tasks, as compared to MFs and HTs. Specifically in the Splice and CIFAR-10 tasks (Figure \ref{fig:select_acc_stream}, left and right), the algorithm always performs the best among streaming classifiers. Its accuracy is also very close to the highest on the Pendigits dataset (Figure \ref{fig:select_acc_stream}, center). 
-The performance of single SDTs shows substantial increases in the Pendigits task (Figure \ref{fig:select_acc_stream}, center). 
-These results clearly illustrate that our streaming trees and ensembles incrementally optimize the tree structures with new information, benefiting from continual data batches.
+SDFs consistently achieve high accuracy across all sample sizes and classification tasks, as compared to MFs and HTs. Specifically in the Splice and CIFAR-10 tasks (Figure \ref{fig:select_acc_stream}, left and right), the algorithm always performs the best among streaming classifiers. Its accuracy is also very close to the highest on the Pendigits dataset (Figure \ref{fig:select_acc_stream}, center). 
+Single SDTs also outperform HTs in the Splice and CIFAR-10 tasks (Figure \ref{fig:select_acc_stream}, left and right).
+% , shows substantial increases in the Pendigits task (Figure \ref{fig:select_acc_stream}, center). 
+These results clearly show that our streaming trees and ensembles incrementally optimize the tree structures with new information, benefiting from continual data batches.
 
 HTs always have the lowest accuracy when training on the Splice dataset, which remains almost constant as sample size increases (Figure \ref{fig:select_acc_stream}, left). In this case, the classifier fails to learn any new information from continual data batches.
-It also shows performance fluctuations when training on the other two datasets. In the Pendigits task, the accuracy starts dropping significantly around 4,000 samples until rebounding at 6,000 samples (Figure \ref{fig:select_acc_stream}, center). In the CIFAR-10 task, there is a sudden performance increase around 32,000 samples, barely overtaking the accuracy of SDTs (Figure \ref{fig:select_acc_stream}, right).
-We speculate that the fluctuations are related to how the algorithm regulates low performing leaves under resource constraints \citep{domingos_mining_2000}. However, our attempts of increasing the maximum size of HTs, even to excessive amounts beyond the memory limits, would not alleviate the problem. 
-Such disadvantages could prevent HTs from producing meaningful results on certain datasets or maintaining consistent performance at larger samples sizes. Based on these results, we decided to exclude forest ensembles of HTs from our benchmarks.
+Its performance also shows significant fluctuations when training on the other two datasets. 
+The accuracy starts shifting sharply around 4,000 samples in the Pendigits task and around 32,000 samples in the CIFAR-10 task. 
+We speculate that the fluctuations are due to how HT regulates low performing leaves under resource constraints \citep{domingos_mining_2000}. However, increasing the maximum size of HTs, even to excessive amounts over the memory limits, would not alleviate the problem. 
+Thus, we attribute these fluctuations to implementation errors and mark the problematic sample sizes with the \textbf{star symbol} (Figure \ref{fig:select_acc_stream}, center and right) instead of showing unreliable plots.
+Such disadvantages could prevent HTs from producing meaningful results on certain datasets or maintaining consistent performance at larger sample sizes. Based on these results, we exclude forest ensembles of HTs from our benchmarks.
 
-In the Pendigits task, MFs perform well at larger sample sizes (Figure \ref{fig:select_acc_stream}, center). However, their accuracy is even worse than single SDTs' on the Splice dataset, only surpassing the almost constant plots of HTs (Figure \ref{fig:select_acc_stream}, left). 
+In the Pendigits task, MFs perform well at larger sample sizes (Figure \ref{fig:select_acc_stream}, center). However, their accuracy is worse than single SDTs' on the Splice dataset, only surpassing the almost constant plots of HTs (Figure \ref{fig:select_acc_stream}, left). 
 We find MFs' worse performance in the Splice task as expected due to previous experiments on DNA data \citep{lakshminarayanan_mondrian_2014}. 
 The accuracy could be improved if feature engineering is implemented, demonstrating the drawbacks of label-independent random splits on certain data domains \citep{roy_mondrian_2009, ziegler_mining_2014}.
 Moreover, MFs perform worse than SDFs on the CIFAR-10 dataset (Figure \ref{fig:select_acc_stream}, right). The results show that SDFs are better at handling more feature dimensions.
 
-\begin{figure}[!htb]
+\begin{figure*}[!htb]
 \centering
-\includegraphics[width=0.4\columnwidth]{select_cifar_mem_stream}
+\includegraphics[width=0.9\columnwidth]{select_cifar_mem_stream}
   \caption{Multiclass classifications on the CIFAR-10 dataset. The classifiers include: Stream Decision Forest \textbf{(SDF)}, Stream Decision Tree \textbf{(SDT)}, Hoeffding Tree \textbf{(HT)}, and Mondrian Forest \textbf{(MF)}. 
-  Each solid or dashed line shows the maximum virtual memories during a classifier's first repetition, and the dotted line shows the memory taken by loading the CIFAR-10 dataset and packages. The classifiers are ordered by their memory usage at the largest sample size. SDFs are the most space efficient, and their usage decrease at 40,000 samples could be attributed to the algorithm's tree replacements. SDTs also show very low usage. However, HTs and MFs take up excessive memories as sample size increases.
+  Each line represents averaged results from 10 randomized repetitions. Classifier sizes measure the pickled python objects, and training spaces check the maximum virtual memories during fitting.
+  Among forest classifiers, SDFs have the lowest storage sizes and use the smallest training space. SDTs also show very low usage in those categories. 
+  While other estimators' nodes increase linearly with sample sizes, HTs' numbers are abnormally low, showing little improvement from streaming batches.
+  MFs are the most space inefficient and take up excessive memories as sample size increases. Other classifiers only have minimal increases on training space.
 %   , surpassing batch decision trees (DTs) and decision forests (DFs) at 6,000 samples.
   }
 \label{fig:select_cifar_mem_stream}
-\end{figure}
+\end{figure*}
 
-In terms of computational space, SDFs are the most efficient on the CIFAR-10 dataset at the largest sample size (Figure \ref{fig:select_cifar_mem_stream}). The classifier's memory usage drops substantially around 40,000 samples, which could be attributed to its tree replacement approach (Algorithm \ref{alg:sdf}). SDTs have the second lowest memory usage, and both algorithms show small increases.
-% use less than batch DTs and DFs. 
-However, the other two streaming classifiers: HTs and MFs both take up excessive virtual memories as sample size increases, surpassing all other algorithms around 3,000 samples.
-At the maximum sample size, an HT has more than quadrupled the memory required by the dataset and packages (4.5 GB), and an MF even occupies more than 30 GB of computational space. Such space constraints significantly limit these two algorithms' applications, and the total number of trees in MFs must be restricted to ensure task completion. 
+In terms of computational space, SDFs are the most efficient forests on the CIFAR-10 dataset (Figure \ref{fig:select_cifar_mem_stream}). 
+SDTs also show space efficiency by taking up small training space and low storage sizes.
+However, the other two streaming classifiers: HTs and MFs both show abnormal space usage.
+HTs' number of nodes remains constant until very large samples sizes (Figure \ref{fig:select_cifar_mem_stream}, center). Despite fitting new batches of training data, the classifier fails to generate new splits, and the results correspond to its suboptimal accuracy (Figure \ref{fig:select_acc_stream}, right).
+Moreover, MFs take up excessive training space as sample size increases, substantially surpassing all other algorithms after 1,000 samples \ref{fig:select_cifar_mem_stream}, left and right). At the maximum size, they use six times more resources than SDFs.
+% At the maximum sample size, an HT has more than quadrupled the memory required by the dataset and packages (4.5 GB), and an MF even occupies more than 30 GB of computational space. 
+Such space constraints significantly limit the algorithm's applications. The total number of trees in MFs must be restricted to ensure task completion, limiting their potential performance. 
 Thus, SDFs would be considered the optimal choice for streaming tasks with limited resources. We do not report the other two tasks' virtual memories as the changes are minimal. 
 
 See Appendix \ref{app:select_time} for training wall times on the three datasets.
@@ -235,7 +243,7 @@ See Appendix \ref{app:select_time} for training wall times on the three datasets
 \end{figure*}
 
 \subsection{Comparisons with Batch Algorithms}
-In the three selected tasks, SDFs achieve consistent accuracy and perform close to DFs on the Pendigits dataset (Figure \ref{fig:select_acc_batch}). Furthermore, in the OpenML-CC18 tasks, SDFs achieve high classification accuracy and consistent improvements as more data batches come in. They often achieve performance as well, sometimes even better, than that of DFs (Appendix \ref{app:cc18}). These results illustrate that the ensemble can maintain its performance on datasets across a variety of data domains, including tabular, image, audio, and more \citep{bischl_openml_2019}. Such consistency makes SDFs applicable to diverse real-world scenarios, avoiding the disadvantages of HTs and MFs.
+In the three selected tasks, SDFs achieve consistent accuracy and perform close to DFs on the Pendigits dataset (Figure \ref{fig:select_acc_batch}). Furthermore, in the OpenML-CC18 tasks, SDFs achieve high classification accuracy and consistent improvements as more data batches come in. They often achieve performance as well as, sometimes even better than, that of DFs (Appendix \ref{app:cc18}). These results illustrate that the ensemble can maintain its performance on datasets across a variety of data domains, including tabular, image, audio, and more \citep{bischl_openml_2019}. Such consistency makes SDFs applicable to diverse real-world scenarios, avoiding the disadvantages of HTs and MFs.
 
 \begin{figure}[!htb]
 \centering
@@ -257,17 +265,66 @@ Nevertheless, this scenario is unreasonable in real-world applications, and refi
 In conclusion, we demonstrate that our algorithms, the simplest approach to streaming trees and ensembles, achieve consistently high performance on a variety of real-world datasets. 
 We also illustrate that SDFs avoid the current problems of HTs and MFs, which perform catastrophically on certain datasets and take up excessive memories at large sample sizes. 
 
+\section{Theoretical Efficiency and Comparisons}
+\label{theory}
+We explore and compare the theoretical complexities of SDFs and DFs. SDFs are shown to be more efficient than DFs in learning new data. Theses comparisons show the effects of streaming batches on estimator complexities.
+
+\subsection{Learning Time}
+\label{theory:time}
+\begin{lemma}
+In terms of learning time complexity, streaming decision forests are more efficient than batch decision forests.
+\end{lemma}
+
+\begin{proof}
+An algorithm's learning time complexity represents the theoretical learning time for a new dataset. It depends on both the input properties and model hyperparameters. Let $T$ be the number of trees, $n$ the total number of training samples, $b$ the number of batches, $d$ the total number of features, and $p$ the number of features sampled at each split. For building DFs, the average time complexity is $\mathcal{O}(Tpn\log^2{n})$. The $pn\log{n}$ term corresponds to sorting $p$ features at each node, and $\log{n}$ accounts for the average number of nodes \citep{louppe_understanding_2015}. 
+
+The average learning time of SDF only defers from DF's in terms of sample size. When training a new tree with one data batch, the average number of nodes is reduced to $\log{n/b}$, and sorting features in all nodes takes $\mathcal{O}(p(n/b)\log^2(n/b))$. Each time to update the tree with one new batch, SDF potentially visits all the existing nodes, taking a loose-bounded complexity of $\mathcal{O}(p(n/b)\log(n/b)\log(n))$. In early updates, the actual number of nodes visited would be much fewer than $\log(n)$. When considering all the batches, the updating complexity becomes:
+\begin{align*}
+    \mathcal{O}(bp(n/b)\log(n/b)\log(n))
+    &= \mathcal{O}(pn\log(n/b)\log(n))
+\end{align*}
+At the forest level, fully building the estimator includes additions and updates for every single tree: 
+\begin{align*}
+    \mathcal{O}(T(p(n/b)\log^2{(n/b)} + pn\log(n/b)\log(n)))
+\end{align*}
+As the updating process is slower, the complexity can be simplified as $\mathcal{O}(Tpn\log(n/b)\log(n))$, which is faster than building DFs when $b \geq 2$.
+\end{proof}
+
+\subsection{Learning Space}
+\begin{lemma}
+In terms of learning space complexity, streaming decision forests are more efficient than batch decision forests.
+\end{lemma}
+
+\begin{proof}
+An algorithm's learning space complexity describes the theoretical maximum computational space during training, which scales with sample size and hyperparameters. Let $c$ be the number of classes and $T$, $d$, $n$, and $b$ be defined as in \ref{theory:time}. 
+
+Building DFs requires keeping all the samples in memory, so the data matrix requires a complexity of $\mathcal{O}(dn)$. When splitting nodes, two $c$-length arrays record the class counts on either end of the split point. They are also used to evaluate the splitting criteria, such as Gini impurity and entropy. Fully grown trees have totally $2n - 1$ nodes, which contain exactly one sample in every leaf. This term is dominated by the $dn$ term, making DF's space complexity $\mathcal{O}(dn + c)$.
+% The average memory needed to grow a single tree with one batch of samples is $\mathcal{O}(dn/b + c)$, which accounts for both the data matrix and the two $c$-length arrays of class counts. 
+
+SDF updates the tree structure with continual data batches, discarding the old data after each fitting (Algorithm \ref{alg:sdf}). Data storage only accounts for the current batch and has an average complexity of $\mathcal{O}(dn/b)$. The class counts remain the same, and fully grown trees also have the same maximum. Thus, SDF's learning space complexity becomes $\mathcal{O}(dn/b + c)$, which is more efficient than DFs'.
+\end{proof}
+
+% \subsection{Theoretical Storage Complexity}
+% \begin{lemma}
+% In terms of storage complexity, streaming decision forests are similar to batch decision forests.
+% \end{lemma}
+
+% \begin{proof}
+% SDFs do not store any data or additional matrices (Algorithm \ref{alg:sdf}), so their storage complexity is similar to DFs.
+% \end{proof}
+
 \section{Discussion}
 \label{discussion}
-Our streaming tree algorithms: SDTs and SDFs utilize the simplest strategy of extending fitted decision trees (Algorithm \ref{alg:sdt} and \ref{alg:sdf}). It maintains all the existing partitions and further splits the feature space with new data batches (Figure \ref{fig:iris}). This approach is easier to implement than Hoeffding bounds and Mondrian processes, as both methods modify the tree splitting mechanisms \citep{hoeffding_probability_1994, domingos_mining_2000, roy_mondrian_2009, lakshminarayanan_mondrian_2014}. 
-Furthermore, SDFs achieve consistently high accuracy in diverse classification tasks and often perform as well, occasionally even better, than state-of-the-art batch DFs (Figure \ref{fig:select_acc_stream} and \ref{fig:cc18}). These results show that our methods avoid the problems of HTs and MFs, which perform poorly in some tasks and occupy huge amounts of memory in others (Figure \ref{fig:select_acc_stream} and \ref{fig:select_cifar_mem_stream}). Thus, SDTs and SDFs establish a simple standard for streaming trees that could be readily applied to many real-world problems.
+Our streaming tree algorithms: SDT and SDF utilize the simplest strategy of extending fitted decision trees (Algorithm \ref{alg:sdt} and \ref{alg:sdf}). It maintains all the existing partitions and further splits the feature space with new data batches (Figure \ref{fig:iris}). This approach is easier to implement than Hoeffding bounds and Mondrian processes, as both methods modify the tree splitting mechanisms \citep{hoeffding_probability_1994, domingos_mining_2000, roy_mondrian_2009, lakshminarayanan_mondrian_2014}. 
+Furthermore, SDFs achieve consistently high accuracy in diverse classification tasks and often perform as well as, occasionally even better than, state-of-the-art batch DFs (Figure \ref{fig:select_acc_stream} and \ref{fig:cc18}). It is also more time and space efficient for SDFs to learn new information (Section \ref{theory}).
+These results show that our methods avoid the problems of HTs and MFs, which perform poorly in some tasks and occupy huge amounts of memory in others (Figure \ref{fig:select_acc_stream} and \ref{fig:select_cifar_mem_stream}). Thus, SDTs and SDFs establish a simple standard for streaming trees that could be readily applied to many real-world problems.
 
 On some datasets with high complexities, batch trees and ensembles could achieve more accurate results if all samples are given at once (Figure \ref{fig:cc18} and \ref{fig:cc18_fill}). Nonetheless, this assumption is very unlikely in real-world scenarios \citep{abdulsalam_streaming_2007, liu_isolation_2008}. In our experiments and actual practices, batch decision trees and forests need to store all available data and refit themselves every time a new batch of samples comes in. Even by restricting the number of refitting with certain criteria (e.g. a minimum amount of new samples), it would still cost significantly more computational resources than incremental updates (Figure \ref{fig:select_cifar_mem_stream}). Thus, our streaming trees provide an alternative solution to such tasks. As an SDF continuously improves its partitions with new information, any differences in performance would eventually be eliminated by enough data batches. It is therefore more economical to keep updating an established streaming model than constructing a new batch forest from time to time.
 
 Although our experiments focus on single in-distribution tasks, SDFs' applications could be extended to solve OOD problems like distribution shift and continual learning \citep{geisa_towards_2021, van_de_ven_three_2019}. 
 Technically, each extension of decision trees does not have to rely on samples from the same distribution or use the same splitting criteria. Old trees can also be replaced anytime if previous partitions fail to perform well on current data streams. Moreover, as supplemental data arrive, continual learning models could leverage SDFs to incrementally update existing tasks.
 
-Overall, our method of incremental updates excels at simplicity, consistency, space efficiency, and extensibility. This approach could offer great development potentials and set a clear standard for streaming tree algorithms, focusing on real-world applications.
+Overall, our method of incremental updates excels at simplicity, consistency, learning time and space efficiency, and extensibility. This approach could offer great development potentials and set a clear standard for streaming tree algorithms, focusing on real-world applications.
 
 \section*{Acknowledgements}
 The authors acknowledge the National Science Foundation-Simons Foundation’s Research Collaboration on the Mathematical and Scientific Foundations of Deep Learning (MoDL), NSF grant 2031985. We also thank Vivek Gopalakrishnan, Michael Powell, Tyler Tomita, Randal Burns, Meghana Madhyastha, and all members of the NeuroData Lab at JHU for their valuable supports. This work is graciously funded by the Defense Advanced Research Projects Agency (DARPA) Lifelong Learning Machines program through contract FA8650-18-2-7834. Experiments were partially supported by funding from Microsoft Research.

@@ -5,13 +5,15 @@
 \centering
 \includegraphics[width=0.9\textwidth]{select_time}
   \caption{Multiclass classifications on the Splice \textbf{(left)}, Pendigits \textbf{(center)}, and CIFAR-10 \textbf{(right)} datasets. The classifiers include: Stream Decision Forest \textbf{(SDF)}, Decision Forest \textbf{(DF)}, Stream Decision Tree \textbf{(SDT)}, Decision Tree \textbf{(DT)}, Hoeffding Tree \textbf{(HT)}, and Mondrian Forest \textbf{(MF)}. 
-  Cumulative fitting times are shown for all estimators, and two batch estimators' times include refitting at each sample size. Each line represents averaged results from 10 random repetitions. SDTs are the most efficient in the CIFAR-10 task. SDFs take longer times in the Splice and Pendigits tasks, but the algorithm is overtaken by HTs, batch DTs, and DFs in the CIFAR-10 task. MFs with a limited amount of 10 trees are the most efficient forest classifier.
+  Cumulative fitting times are shown for all estimators, and two batch estimators' times include refitting at each sample size. Each line represents averaged results from 10 random repetitions. SDTs are the most efficient in the CIFAR-10 task. SDFs take longer times in the Splice and Pendigits tasks, but are overtaken by HTs, batch DTs, and DFs in the CIFAR-10 task. MFs maintain similar time efficiency as SDFs. DFs are faster than DTs in the CIFAR-10 task, which could be attributed to the feature reductions.
   }
 \label{fig:select_time}
 \end{figure*}
 
 In terms of training wall times, SDTs are the most efficient on the CIFAR-10 dataset (Figure \ref{fig:select_time}, right). 
-SDFs take longer times in the Splice and Pendigits tasks (Figure \ref{fig:select_time}, left and center). However, on the CIFAR-10 dataset, HTs are the most inefficient streaming trees, even slower than the two streaming ensembles. Also, as sample size increases, time usage of batch estimators grows more quickly due to refitting, and they surpass SDFs around 2,000 samples. MFs take shorter training times than other streaming forests, which could be attributed to a limited number of estimators (only 10 trees). All training wall times grow linearly as sample size increases.
+SDFs take longer times in the Splice and Pendigits tasks (Figure \ref{fig:select_time}, left and center). However, on the CIFAR-10 dataset, HTs are the most inefficient streaming trees, even slower than the two streaming ensembles. Also, as sample size increases, time usage of batch estimators grows more quickly due to refitting, and they surpass SDFs around 2,000 samples. MFs take similar training times as SDFs.
+% , which could be attributed to a limited number of estimators (only 10 trees)
+All training wall times grow linearly as sample size increases. Results are subject to implementation details of packages used (Section \ref{methods}).
 
 \clearpage
 
@@ -26,4 +28,3 @@ SDFs take longer times in the Splice and Pendigits tasks (Figure \ref{fig:select
   }
 \label{fig:cc18}
 \end{figure}
-

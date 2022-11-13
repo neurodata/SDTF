@@ -1,4 +1,4 @@
-\begin{thebibliography}{41}
+\begin{thebibliography}{42}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -279,5 +279,10 @@ Andreas Ziegler and Inke~R. K{\"o}nig.
   applications.
 \newblock \emph{WIREs Data Mining and Knowledge Discovery}, 4\penalty0
   (1):\penalty0 55--63, 2014.
+
+\bibitem[Louppe(2015)]{louppe_understanding_2015}
+Gilles Louppe.
+\newblock Understanding {Random} {Forests}: {From} {Theory} to {Practice}.
+\newblock \emph{arXiv:1407.7502 [stat]}, June 2015.
 
 \end{thebibliography}

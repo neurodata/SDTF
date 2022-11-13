@@ -3,7 +3,6 @@ Author: Haoyin Xu
 """
 import time
 import argparse
-import numpy as np
 from numpy.random import permutation
 import json
 import openml

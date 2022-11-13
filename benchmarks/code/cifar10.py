@@ -4,7 +4,6 @@ Author: Haoyin Xu
 import time
 import psutil
 import argparse
-import numpy as np
 import torchvision.datasets as datasets
 from numpy.random import permutation
 from sklearn.tree import DecisionTreeClassifier
@@ -26,6 +25,7 @@ def experiment_dt():
     size_l = []
 
     dt = DecisionTreeClassifier()
+    p = psutil.Process()
 
     for i in range(500):
         X_t = X_r[: (i + 1) * 100]
@@ -42,7 +42,10 @@ def experiment_dt():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_m = (
+            p.memory_full_info().rss / 1024 / 1024 / 1024,
+            p.memory_full_info().vms / 1024 / 1024 / 1024,
+        )
         v_m_l.append(v_m)
 
         # Check node counts
@@ -68,6 +71,7 @@ def experiment_rf():
     size_l = []
 
     rf = RandomForestClassifier(n_estimators=10)
+    p = psutil.Process()
 
     for i in range(500):
         X_t = X_r[: (i + 1) * 100]
@@ -84,7 +88,10 @@ def experiment_rf():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_m = (
+            p.memory_full_info().rss / 1024 / 1024 / 1024,
+            p.memory_full_info().vms / 1024 / 1024 / 1024,
+        )
         v_m_l.append(v_m)
 
         # Check node counts
@@ -110,6 +117,7 @@ def experiment_ht():
     size_l = []
 
     ht = tree.HoeffdingTreeClassifier(max_size=1000, grace_period=2)
+    p = psutil.Process()
 
     for i in range(50000):
         X_t = X_r[i]
@@ -129,7 +137,10 @@ def experiment_ht():
             size_l.append(size)
 
             # Check memory
-            v_m = psutil.virtual_memory()[2]
+            v_m = (
+                p.memory_full_info().rss / 1024 / 1024 / 1024,
+                p.memory_full_info().vms / 1024 / 1024 / 1024,
+            )
             v_m_l.append(v_m)
 
             # Check node counts
@@ -167,6 +178,7 @@ def experiment_mf():
     size_l = []
 
     mf = MondrianForestClassifier(n_estimators=10)
+    p = psutil.Process()
 
     for i in range(500):
         X_t = X_r[i * 100 : (i + 1) * 100]
@@ -183,7 +195,10 @@ def experiment_mf():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_m = (
+            p.memory_full_info().rss / 1024 / 1024 / 1024,
+            p.memory_full_info().vms / 1024 / 1024 / 1024,
+        )
         v_m_l.append(v_m)
 
         # Check node counts
@@ -213,6 +228,7 @@ def experiment_sdt():
     size_l = []
 
     sdt = DecisionTreeClassifier()
+    p = psutil.Process()
 
     for i in range(500):
         X_t = X_r[i * 100 : (i + 1) * 100]
@@ -229,7 +245,10 @@ def experiment_sdt():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_m = (
+            p.memory_full_info().rss / 1024 / 1024 / 1024,
+            p.memory_full_info().vms / 1024 / 1024 / 1024,
+        )
         v_m_l.append(v_m)
 
         # Check node counts
@@ -259,6 +278,7 @@ def experiment_sdf():
     size_l = []
 
     sdf = StreamDecisionForest(n_estimators=10)
+    p = psutil.Process()
 
     for i in range(500):
         X_t = X_r[i * 100 : (i + 1) * 100]
@@ -275,7 +295,10 @@ def experiment_sdf():
         size_l.append(size)
 
         # Check memory
-        v_m = psutil.virtual_memory()[2]
+        v_m = (
+            p.memory_full_info().rss / 1024 / 1024 / 1024,
+            p.memory_full_info().vms / 1024 / 1024 / 1024,
+        )
         v_m_l.append(v_m)
 
         # Check node counts
@@ -350,12 +373,12 @@ if args.all or args.dt:
         dt_n_node_l.append(dt_n_node)
         dt_size_l.append(dt_size)
 
-        write_result("../results/dt/cifar10_acc.txt", dt_acc_l)
-        write_result("../results/dt/cifar10_train_t.txt", dt_train_t_l)
-        write_result("../results/dt/cifar10_test_t.txt", dt_test_t_l)
-        write_result("../results/dt/cifar10_v_m.txt", dt_v_m_l)
-        write_result("../results/dt/cifar10_n_node.txt", dt_n_node_l)
-        write_result("../results/dt/cifar10_size.txt", dt_n_node_l)
+        write_result("../results/dt/cifar10_acc", dt_acc_l)
+        write_result("../results/dt/cifar10_train_t", dt_train_t_l)
+        write_result("../results/dt/cifar10_test_t", dt_test_t_l)
+        write_result("../results/dt/cifar10_v_m", dt_v_m_l, True)
+        write_result("../results/dt/cifar10_n_node", dt_n_node_l)
+        write_result("../results/dt/cifar10_size", dt_size_l, True)
 
 if args.all or args.rf:
     rf_acc_l = []
@@ -378,12 +401,12 @@ if args.all or args.rf:
         rf_n_node_l.append(rf_n_node)
         rf_size_l.append(rf_size)
 
-        write_result("../results/rf/cifar10_acc.txt", rf_acc_l)
-        write_result("../results/rf/cifar10_train_t.txt", rf_train_t_l)
-        write_result("../results/rf/cifar10_test_t.txt", rf_test_t_l)
-        write_result("../results/rf/cifar10_v_m.txt", rf_v_m_l)
-        write_result("../results/rf/cifar10_n_node.txt", rf_n_node_l)
-        write_result("../results/rf/cifar10_size.txt", rf_size_l)
+        write_result("../results/rf/cifar10_acc", rf_acc_l)
+        write_result("../results/rf/cifar10_train_t", rf_train_t_l)
+        write_result("../results/rf/cifar10_test_t", rf_test_t_l)
+        write_result("../results/rf/cifar10_v_m", rf_v_m_l, True)
+        write_result("../results/rf/cifar10_n_node", rf_n_node_l)
+        write_result("../results/rf/cifar10_size", rf_size_l, True)
 
 if args.all or args.ht:
     ht_acc_l = []
@@ -406,12 +429,12 @@ if args.all or args.ht:
         ht_n_node_l.append(ht_n_node)
         ht_size_l.append(ht_size)
 
-        write_result("../results/ht/cifar10_acc.txt", ht_acc_l)
-        write_result("../results/ht/cifar10_train_t.txt", ht_train_t_l)
-        write_result("../results/ht/cifar10_test_t.txt", ht_test_t_l)
-        write_result("../results/ht/cifar10_v_m.txt", ht_v_m_l)
-        write_result("../results/ht/cifar10_n_node.txt", ht_n_node_l)
-        write_result("../results/ht/cifar10_size.txt", ht_size_l)
+        write_result("../results/ht/cifar10_acc", ht_acc_l)
+        write_result("../results/ht/cifar10_train_t", ht_train_t_l)
+        write_result("../results/ht/cifar10_test_t", ht_test_t_l)
+        write_result("../results/ht/cifar10_v_m", ht_v_m_l, True)
+        write_result("../results/ht/cifar10_n_node", ht_n_node_l)
+        write_result("../results/ht/cifar10_size", ht_size_l, True)
 
 if args.all or args.mf:
     mf_acc_l = []
@@ -434,12 +457,12 @@ if args.all or args.mf:
         mf_n_node_l.append(mf_n_node)
         mf_size_l.append(mf_size)
 
-        write_result("../results/mf/cifar10_acc.txt", mf_acc_l)
-        write_result("../results/mf/cifar10_train_t.txt", mf_train_t_l)
-        write_result("../results/mf/cifar10_test_t.txt", mf_test_t_l)
-        write_result("../results/mf/cifar10_v_m.txt", mf_v_m_l)
-        write_result("../results/mf/cifar10_n_node.txt", mf_n_node_l)
-        write_result("../results/mf/cifar10_size.txt", mf_size_l)
+        write_result("../results/mf/cifar10_acc", mf_acc_l)
+        write_result("../results/mf/cifar10_train_t", mf_train_t_l)
+        write_result("../results/mf/cifar10_test_t", mf_test_t_l)
+        write_result("../results/mf/cifar10_v_m", mf_v_m_l, True)
+        write_result("../results/mf/cifar10_n_node", mf_n_node_l)
+        write_result("../results/mf/cifar10_size", mf_size_l, True)
 
 if args.all or args.sdt:
     sdt_acc_l = []
@@ -469,12 +492,12 @@ if args.all or args.sdt:
         sdt_n_node_l.append(sdt_n_node)
         sdt_size_l.append(sdt_size)
 
-        write_result("../results/sdt/cifar10_acc.txt", sdt_acc_l)
-        write_result("../results/sdt/cifar10_train_t.txt", sdt_train_t_l)
-        write_result("../results/sdt/cifar10_test_t.txt", sdt_test_t_l)
-        write_result("../results/sdt/cifar10_v_m.txt", sdt_v_m_l)
-        write_result("../results/sdt/cifar10_n_node.txt", sdt_n_node_l)
-        write_result("../results/sdt/cifar10_size.txt", sdt_size_l)
+        write_result("../results/sdt/cifar10_acc", sdt_acc_l)
+        write_result("../results/sdt/cifar10_train_t", sdt_train_t_l)
+        write_result("../results/sdt/cifar10_test_t", sdt_test_t_l)
+        write_result("../results/sdt/cifar10_v_m", sdt_v_m_l, True)
+        write_result("../results/sdt/cifar10_n_node", sdt_n_node_l)
+        write_result("../results/sdt/cifar10_size", sdt_size_l, True)
 
 if args.all or args.sdf:
     sdf_acc_l = []
@@ -504,9 +527,9 @@ if args.all or args.sdf:
         sdf_n_node_l.append(sdf_n_node)
         sdf_size_l.append(sdf_size)
 
-        write_result("../results/sdf/cifar10_acc.txt", sdf_acc_l)
-        write_result("../results/sdf/cifar10_train_t.txt", sdf_train_t_l)
-        write_result("../results/sdf/cifar10_test_t.txt", sdf_test_t_l)
-        write_result("../results/sdf/cifar10_v_m.txt", sdf_v_m_l)
-        write_result("../results/sdf/cifar10_n_node.txt", sdf_n_node_l)
-        write_result("../results/sdf/cifar10_size.txt", sdf_size_l)
+        write_result("../results/sdf/cifar10_acc", sdf_acc_l)
+        write_result("../results/sdf/cifar10_train_t", sdf_train_t_l)
+        write_result("../results/sdf/cifar10_test_t", sdf_test_t_l)
+        write_result("../results/sdf/cifar10_v_m", sdf_v_m_l, True)
+        write_result("../results/sdf/cifar10_n_node", sdf_n_node_l)
+        write_result("../results/sdf/cifar10_size", sdf_size_l, True)

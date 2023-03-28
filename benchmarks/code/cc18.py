@@ -9,6 +9,7 @@ import openml
 from sklearn.model_selection import StratifiedKFold
 from sklearn.ensemble import RandomForestClassifier
 from sdtf import StreamDecisionForest
+from skgarden import MondrianForestClassifier
 
 from toolbox import *
 
@@ -72,6 +73,38 @@ def experiment_sdf(X_train, X_test, y_train, y_test):
     return sdf_l, train_time_l, test_time_l
 
 
+def experiment_mf(X_train, X_test, y_train, y_test):
+    """Runs experiments for Mondrian Forest"""
+    mf_l = []
+    train_time_l = []
+    test_time_l = []
+
+    mf = MondrianForestClassifier(n_estimators=100, n_jobs=-1)
+    batch_counts = len(y_train) / BATCH_SIZE
+    classes = np.unique(y_train)
+    for i in range(int(batch_counts)):
+        X_t = X_train[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]
+        y_t = y_train[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]
+
+        # Train the model
+        start_time = time.perf_counter()
+        mf.partial_fit(X_t, y_t, classes=classes)
+        end_time = time.perf_counter()
+        train_time_l.append(end_time - start_time)
+
+        # Test the model
+        start_time = time.perf_counter()
+        mf_l.append(prediction(mf, X_test, y_test))
+        end_time = time.perf_counter()
+        test_time_l.append(end_time - start_time)
+
+    # Reformat the train times
+    for i in range(1, int(batch_counts)):
+        train_time_l[i] += train_time_l[i - 1]
+
+    return mf_l, train_time_l, test_time_l
+
+
 # Parse classifier choices
 parser = argparse.ArgumentParser()
 parser.add_argument("-all", help="all classifiers", required=False, action="store_true")
@@ -79,6 +112,7 @@ parser.add_argument("-rf", help="random forests", required=False, action="store_
 parser.add_argument(
     "-sdf", help="stream decision forests", required=False, action="store_true"
 )
+parser.add_argument("-mf", help="mondrian forests", required=False, action="store_true")
 args = parser.parse_args()
 
 BATCH_SIZE = 100
@@ -90,6 +124,10 @@ rf_test_t_dict = {}
 sdf_acc_dict = {}
 sdf_train_t_dict = {}
 sdf_test_t_dict = {}
+
+mf_acc_dict = {}
+mf_train_t_dict = {}
+mf_test_t_dict = {}
 
 # Prepare cc18 data
 for data_id in openml.study.get_suite("OpenML-CC18").data:
@@ -107,6 +145,10 @@ for data_id in openml.study.get_suite("OpenML-CC18").data:
     sdf_acc_dict[data_id] = []
     sdf_train_t_dict[data_id] = []
     sdf_test_t_dict[data_id] = []
+
+    mf_acc_dict[data_id] = []
+    mf_train_t_dict[data_id] = []
+    mf_test_t_dict[data_id] = []
 
     # Split the datasets into 5-fold CV
     skf = StratifiedKFold(shuffle=True)
@@ -161,4 +203,24 @@ for data_id in openml.study.get_suite("OpenML-CC18").data:
 
             f = open("../results/sdf/cc18_test_t.json", "w")
             json.dump(sdf_test_t_dict, f)
+            f.close()
+
+        if args.all or args.mf:
+            mf_acc, mf_train_t, mf_test_t = experiment_mf(
+                X_train, X_test, y_train, y_test
+            )
+            mf_acc_dict[data_id].append(mf_acc)
+            mf_train_t_dict[data_id].append(mf_train_t)
+            mf_test_t_dict[data_id].append(mf_test_t)
+
+            f = open("../results/mf/cc18_acc.json", "w")
+            json.dump(mf_acc_dict, f)
+            f.close()
+
+            f = open("../results/mf/cc18_train_t.json", "w")
+            json.dump(mf_train_t_dict, f)
+            f.close()
+
+            f = open("../results/mf/cc18_test_t.json", "w")
+            json.dump(mf_test_t_dict, f)
             f.close()
